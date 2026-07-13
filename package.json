@@ -2,7 +2,8 @@
   "scripts": {
     "dev": "concurrently \"npm run dev --prefix client\" \"npm run dev --prefix server\"",
     "start:server": "npm start --prefix server",
-    "start:client": "npm run dev --prefix client"
+    "start:client": "npm run dev --prefix client",
+    "build": "npm run build --prefix client"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.12.0",

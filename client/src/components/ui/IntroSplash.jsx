@@ -3,10 +3,12 @@ import { motion, AnimatePresence } from 'framer-motion'
 import logoImg from '../../assets/logo.png'
 
 export default function IntroSplash() {
-  const [show, setShow] = useState(() => {
-    // Only show once per session
-    return !sessionStorage.getItem('vrc_intro_shown')
-  })
+  const [show, setShow] = useState(false)
+
+useEffect(() => {
+  const alreadyShown = sessionStorage.getItem("vrc_intro_shown")
+  setShow(!alreadyShown)
+}, [])
 
   useEffect(() => {
     if (!show) return

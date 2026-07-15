@@ -30,8 +30,18 @@ const connectDB = async () => {
     try {
       await User.syncIndexes()
       console.log('User indexes synced successfully.')
+
+      // Check if products exist; if not, automatically seed default catalog
+      const { default: Product } = await import('../models/Product.js')
+      const productCount = await Product.countDocuments()
+      if (productCount === 0) {
+        console.log('[INFO] Database is empty. Automatically seeding default catalog...')
+        const { seedDatabase } = await import('../seed.js')
+        await seedDatabase()
+        console.log('[SUCCESS] Database successfully auto-seeded with default VRC products.')
+      }
     } catch (indexErr) {
-      console.warn('[WARNING] User index sync failed:', indexErr.message)
+      console.warn('[WARNING] User index sync or database auto-seeding failed:', indexErr.message)
     }
     return
   }

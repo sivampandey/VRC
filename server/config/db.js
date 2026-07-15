@@ -38,6 +38,7 @@ const connectDB = async () => {
   }
 
   if (connected) {
+    try {
       await User.syncIndexes()
       console.log('User indexes synced successfully.')
 

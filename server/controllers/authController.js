@@ -38,17 +38,21 @@ export const register = async (req, res, next) => {
       }
     }
 
+    const isAdmin =
+      cleanEmail === "vaishnav@admin.com";
+
     const user = await User.create({
       name,
       email: cleanEmail,
       phone: cleanPhone,
       password,
-      isVerified: true
-    })
+      isVerified: true,
+      role: isAdmin ? "admin" : "user",
+    });
 
     const accessToken = generateAccessToken(user)
     const refreshToken = generateRefreshToken(user)
-    
+
     user.refreshToken = refreshToken
     await user.save()
 
@@ -135,7 +139,7 @@ export const refresh = async (req, res, next) => {
 
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET || 'vrc_refresh_secret')
     const user = await User.findOne({ _id: decoded.id, refreshToken })
-    
+
     if (!user) {
       return res.status(401).json({ message: 'Invalid refresh token session.' })
     }
@@ -163,7 +167,7 @@ export const forgotPassword = async (req, res, next) => {
       const normalizedPhone = normalizePhone(identifier)
       user = await User.findOne({ phone: normalizedPhone })
     }
-    
+
     if (!user) {
       return res.status(404).json({ message: 'No user exists with this email or phone number.' })
     }
@@ -207,7 +211,7 @@ export const forgotPassword = async (req, res, next) => {
       devOtp = otp
     }
 
-    return res.json({ 
+    return res.json({
       message,
       sentEmail,
       sentPhone,
@@ -221,7 +225,7 @@ export const forgotPassword = async (req, res, next) => {
 export const resetPassword = async (req, res, next) => {
   try {
     const { token, otp, identifier, password } = req.body
-    
+
     let user
     if (otp && identifier) {
       const cleanIdentifier = identifier.trim()
@@ -249,7 +253,7 @@ export const resetPassword = async (req, res, next) => {
     } else if (token) {
       const decoded = jwt.verify(token, process.env.JWT_SECRET || 'vrc_super_secret_jwt_key')
       user = await User.findById(decoded.id)
-      
+
       if (!user) {
         return res.status(404).json({ message: 'User session not found.' })
       }

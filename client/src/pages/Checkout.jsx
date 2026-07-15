@@ -4,7 +4,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { selectCartItems, selectCartTotal, clearCart } from '../store/cartSlice'
 import { usePlaceOrderMutation, useCreateRazorpayOrderMutation, useVerifyPaymentMutation } from '../store/api/ordersApi'
-import { selectCurrentUser } from '../store/authSlice'
+import { selectCurrentUser, updateStoredUser } from '../store/authSlice'
 import { useGetProfileQuery, useAddAddressMutation } from '../store/api/authApi'
 import toast from 'react-hot-toast'
 import Button from '../components/ui/Button'
@@ -42,8 +42,8 @@ export default function Checkout() {
       const defaultAddr = userProfile.addresses.find(a => a.isDefault) || userProfile.addresses[0]
       setSelectedAddressId(defaultAddr._id)
       setAddress({
-        name: userProfile.name || '',
-        phone: userProfile.phone || '',
+        name: defaultAddr.name || userProfile.name || '',
+        phone: defaultAddr.phone || userProfile.phone || '',
         line1: defaultAddr.line1 || '',
         line2: defaultAddr.line2 || '',
         city: defaultAddr.city || '',
@@ -52,6 +52,7 @@ export default function Checkout() {
       })
     } else {
       setSelectedAddressId('new')
+      setSaveToProfile(true)
     }
   }, [userProfile])
 
@@ -72,8 +73,8 @@ export default function Checkout() {
       const selected = userProfile?.addresses?.find(a => a._id === id)
       if (selected) {
         setAddress({
-          name: userProfile.name || '',
-          phone: userProfile.phone || '',
+          name: selected.name || userProfile.name || '',
+          phone: selected.phone || userProfile.phone || '',
           line1: selected.line1 || '',
           line2: selected.line2 || '',
           city: selected.city || '',
@@ -126,7 +127,7 @@ export default function Checkout() {
       // If client checked "Save to profile", trigger background profile save
       if (currentUser && saveToProfile) {
         try {
-          await addAddress({
+          const updatedAddresses = await addAddress({
             name: address.name,
             phone: address.phone,
             line1: address.line1,
@@ -136,6 +137,7 @@ export default function Checkout() {
             pincode: address.pincode,
             label: 'Home'
           }).unwrap()
+          dispatch(updateStoredUser({ addresses: updatedAddresses }))
         } catch (addrErr) {
           console.warn('Silent address save failed:', addrErr)
         }

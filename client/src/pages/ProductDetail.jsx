@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { Star, Heart, ArrowLeft, MessageSquare, Truck, ShieldCheck, RefreshCw } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectIsWishlisted, toggleWishlist } from '../store/wishlistSlice'
@@ -14,6 +14,7 @@ import ProductCard from '../components/ui/ProductCard'
 export default function ProductDetail() {
   const { slug } = useParams()
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const [selectedSize, setSelectedSize] = useState('')
   const [qty, setQty] = useState(1)
   const [activeTab, setActiveTab] = useState('description')
@@ -61,6 +62,20 @@ export default function ProductDetail() {
     }
     dispatch(addToCart({ product: itemToAdd, size: selectedSize, quantity: qty }))
     toast.success('Added to shopping bag!')
+  }
+
+  const handleBuyNow = () => {
+    if (!selectedSize) {
+      toast.error('Please select a rug size.')
+      return
+    }
+    const itemToAdd = {
+      ...product,
+      price: displayPrice,
+      salePrice: displaySalePrice
+    }
+    dispatch(addToCart({ product: itemToAdd, size: selectedSize, quantity: qty }))
+    navigate('/checkout')
   }
 
   const handleWishlist = () => {
@@ -216,8 +231,17 @@ export default function ProductDetail() {
                   <button onClick={() => setQty(qty + 1)} className="px-4 py-3 text-navy hover:bg-gold/10 font-bold">+</button>
                 </div>
 
-                <Button onClick={handleAddToCart} variant="primary" className="flex-grow py-3.5">
-                  Add to Shopping Bag
+                {/* Add to Shopping Bag */}
+                <button
+                  onClick={handleAddToCart}
+                  className="flex-grow py-3.5 border border-navy text-navy font-cinzel text-[11px] tracking-widest uppercase hover:bg-cream transition-all duration-300 font-bold cursor-pointer"
+                >
+                  Add to Bag
+                </button>
+
+                {/* Direct Order */}
+                <Button onClick={handleBuyNow} variant="primary" className="flex-grow py-3.5">
+                  Direct Order
                 </Button>
 
                 <button 

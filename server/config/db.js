@@ -11,6 +11,17 @@ const connectDB = async () => {
   } else if (defaultUri.includes('localhost')) {
     urisToTry.push(defaultUri.replace('localhost', '127.0.0.1'))
   }
+  
+  // Add local backup fallback database URIs if the main URI is remote
+  const localFallback1 = 'mongodb://127.0.0.1:27017/vrc'
+  const localFallback2 = 'mongodb://localhost:27017/vrc'
+  if (!urisToTry.includes(localFallback1) && defaultUri !== localFallback1) {
+    urisToTry.push(localFallback1)
+  }
+  if (!urisToTry.includes(localFallback2) && defaultUri !== localFallback2) {
+    urisToTry.push(localFallback2)
+  }
+  
   urisToTry = [...new Set(urisToTry)]
 
   let connected = false

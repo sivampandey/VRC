@@ -21,6 +21,10 @@ export const authApi = createApi({
       if (token) {
         headers.set('authorization', `Bearer ${token}`)
       }
+      // Disable browser caching to enforce instant real-time updates
+      headers.set('Cache-Control', 'no-cache, no-store, must-revalidate')
+      headers.set('Pragma', 'no-cache')
+      headers.set('Expires', '0')
       return headers
     }
   }),

@@ -56,32 +56,11 @@ function FormField({ label, error, children }) {
 const inputClass =
   'border-0 border-b border-cream-dark bg-transparent px-0 py-2.5 w-full font-jost text-[13.5px] text-navy font-light placeholder:text-cream-dark placeholder:text-[13px] outline-none focus:border-navy transition-colors disabled:text-muted disabled:cursor-not-allowed'
 
-// ─── Toggle component ─────────────────────────────────────────
-function Toggle({ checked, onChange, label }) {
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={checked}
-      aria-label={label}
-      onClick={() => onChange(!checked)}
-      className={`relative w-10 h-6 rounded-full transition-colors duration-200 flex-shrink-0 cursor-pointer ${checked ? 'bg-gold' : 'bg-cream-dark'}`}
-    >
-      <span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all duration-200 ${checked ? 'right-1' : 'left-1'}`} />
-    </button>
-  )
-}
-
 // ─── Main Page ────────────────────────────────────────────────
 export default function Profile() {
   const user     = useSelector(selectCurrentUser)
   const dispatch = useDispatch()
   const [updateProfile, { isLoading: saving }] = useUpdateProfileMutation()
-
-  const [newsletter,   setNewsletter]   = useState(user?.preferences?.newsletter ?? true)
-  const [orderAlerts,  setOrderAlerts]  = useState(user?.preferences?.orderAlerts ?? true)
-  const [whatsapp,     setWhatsapp]     = useState(user?.preferences?.whatsapp ?? false)
-  const [savingPrefs,  setSavingPrefs]  = useState(false)
 
   const { register, handleSubmit, formState: { errors, isDirty }, reset } = useForm({
     defaultValues: {
@@ -112,25 +91,6 @@ export default function Profile() {
       toast.success('Profile updated successfully')
     } catch (err) {
       toast.error(err?.data?.message || 'Failed to update profile')
-    }
-  }
-
-  async function handlePreferenceSave() {
-    setSavingPrefs(true)
-    try {
-      const res = await updateProfile({
-        preferences: {
-          newsletter,
-          orderAlerts,
-          whatsapp
-        }
-      }).unwrap()
-      dispatch(setCredentials({ user: res.user, token: res.token }))
-      toast.success('Preferences updated successfully')
-    } catch (err) {
-      toast.error(err?.data?.message || 'Failed to save preferences')
-    } finally {
-      setSavingPrefs(false)
     }
   }
 
@@ -258,58 +218,6 @@ export default function Profile() {
         </FormSection>
       </form>
 
-      {/* ─── Preferences ─── */}
-      <FormSection title="PREFERENCES">
-        <div className="flex flex-col divide-y divide-warmcream">
-          {[
-            {
-              title:   'Newsletter & New Collections',
-              desc:    'Be the first to know about new arrivals, sales, and exclusive offers.',
-              checked: newsletter,
-              setter:  setNewsletter,
-            },
-            {
-              title:   'Order Status Notifications',
-              desc:    'Receive SMS and email updates whenever your order status changes.',
-              checked: orderAlerts,
-              setter:  setOrderAlerts,
-            },
-            {
-              title:   'WhatsApp Updates',
-              desc:    'Get order confirmations and exclusive offers directly on WhatsApp.',
-              checked: whatsapp,
-              setter:  setWhatsapp,
-            },
-          ].map(({ title, desc, checked, setter }) => (
-            <div key={title} className="flex items-center justify-between gap-6 py-4">
-              <div>
-                <p className="font-jost text-[13.5px] text-navy font-normal mb-0.5">{title}</p>
-                <p className="text-[11.5px] text-muted font-light leading-relaxed">{desc}</p>
-              </div>
-              <Toggle checked={checked} onChange={setter} label={title} />
-            </div>
-          ))}
-        </div>
-
-        {/* Save preferences row */}
-        <div className="flex items-center gap-3 mt-8 pt-6 border-t border-cream-dark">
-          <button
-            type="button"
-            onClick={handlePreferenceSave}
-            disabled={savingPrefs}
-            className="
-              bg-navy text-cream font-cinzel text-[10px] tracking-[0.14em]
-              px-8 py-3.5 flex items-center gap-2 cursor-pointer
-              hover:bg-navy-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed
-            "
-          >
-            {savingPrefs
-              ? <><span className="animate-spin inline-block">◌</span> SAVING...</>
-              : <><CheckCircle size={13} /> SAVE PREFERENCES</>
-            }
-          </button>
-        </div>
-      </FormSection>
     </div>
   )
 }

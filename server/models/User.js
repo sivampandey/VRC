@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema({
   preferences: {
     newsletter: { type: Boolean, default: true },
     orderAlerts: { type: Boolean, default: true },
-    whatsapp: { type: Boolean, default: false }
+    whatsapp: { type: Boolean, default: true }
   }
 }, {
   timestamps: true

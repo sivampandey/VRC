@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import { generateAccessToken, generateRefreshToken } from '../utils/generateToken.js'
 import sendEmail from '../utils/sendEmail.js'
 import sendWhatsApp from '../utils/sendWhatsApp.js'
+import dns from 'dns'
 
 const normalizePhone = (phone) => {
   if (!phone) return undefined
@@ -25,6 +26,30 @@ export const register = async (req, res, next) => {
     }
 
     if (cleanEmail) {
+      // 1. Regex format check
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+      if (!emailRegex.test(cleanEmail)) {
+        return res.status(400).json({ message: 'Please enter a valid email address structure.' })
+      }
+
+      // 2. DNS check to ensure domain exists and has mail MX/A records
+      const domain = cleanEmail.split('@')[1]
+      const isValidDomain = await new Promise((resolve) => {
+        dns.resolveMx(domain, (err, addresses) => {
+          if (err || !addresses || addresses.length === 0) {
+            dns.resolve(domain, (err2, records) => {
+              resolve(!err2 && records && records.length > 0)
+            })
+          } else {
+            resolve(true)
+          }
+        })
+      })
+
+      if (!isValidDomain) {
+        return res.status(400).json({ message: 'The email domain does not exist or cannot receive mail.' })
+      }
+
       const userExists = await User.findOne({ email: cleanEmail })
       if (userExists) {
         return res.status(400).json({ message: 'User already exists with this email.' })
@@ -55,6 +80,36 @@ export const register = async (req, res, next) => {
 
     user.refreshToken = refreshToken
     await user.save()
+
+    // Send congratulations / welcome email
+    if (user.email) {
+      sendEmail({
+        to: user.email,
+        subject: '🎉 Congratulations! Your VRC Account is Created',
+        text: `Dear ${user.name},\n\nCongratulations! Your account at Vaishnav Rug Collection has been successfully created.\n\nExplore our hand-woven rugs at ${process.env.CLIENT_URL || 'http://localhost:5173'}.\n\nBest regards,\nVaishnav Rug Collection`,
+        html: `
+          <div style="font-family: Arial, sans-serif; line-height: 1.6; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0dcd3; background-color: #FAF9F6;">
+            <div style="background-color: #160400; padding: 20px; text-align: center; border-bottom: 2px solid #C9A56A;">
+              <h2 style="color: #FAF5F0; margin: 0; font-family: Georgia, serif; letter-spacing: 0.1em;">VAISHNAV RUG COLLECTION</h2>
+            </div>
+            <div style="padding: 20px; color: #333333;">
+              <h3 style="color: #160400;">Dear ${user.name},</h3>
+              <p style="font-size: 14px;"><strong>Congratulations!</strong> Your account has been successfully created.</p>
+              <p style="font-size: 14px;">Explore our signature range of premium hand-woven, custom, and bespoke luxury rugs. Discover rugs designed by master weavers that bring timeless art to your living space.</p>
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${process.env.CLIENT_URL || 'http://localhost:5173'}" style="background-color: #C9A56A; color: #160400; padding: 12px 30px; text-decoration: none; font-weight: bold; font-size: 12px; letter-spacing: 0.15em; font-family: sans-serif; display: inline-block;">EXPLORE THE GALLERY</a>
+              </div>
+              <p style="font-size: 12px; color: #777777;">If you have any inquiries or bespoke customization requirements, feel free to contact us or send us a WhatsApp message directly from the website.</p>
+            </div>
+            <div style="background-color: #100301; padding: 15px; text-align: center; font-size: 11px; color: #a19a90; border-top: 1px solid #C9A56A/30;">
+              &copy; ${new Date().getFullYear()} Vaishnav Rug Collection. All rights reserved.
+            </div>
+          </div>
+        `
+      }).then(sent => {
+        if (sent) console.log(`[Email] Congratulations email sent to registered user: ${user.email}`)
+      })
+    }
 
     return res.status(201).json({
       _id: user._id,

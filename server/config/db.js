@@ -38,9 +38,27 @@ const connectDB = async () => {
   }
 
   if (connected) {
-    try {
       await User.syncIndexes()
       console.log('User indexes synced successfully.')
+
+      // Migrate existing users' preferences to true
+      try {
+        const updateResult = await User.updateMany(
+          {},
+          {
+            $set: {
+              'preferences.newsletter': true,
+              'preferences.orderAlerts': true,
+              'preferences.whatsapp': true
+            }
+          }
+        )
+        if (updateResult.modifiedCount > 0) {
+          console.log(`[INFO] Migrated preferences to true for ${updateResult.modifiedCount} existing users.`)
+        }
+      } catch (prefMigrateErr) {
+        console.warn('[WARNING] Existing users preference migration failed:', prefMigrateErr.message)
+      }
 
       // Check if products exist; if not, automatically seed default catalog
       const { default: Product } = await import('../models/Product.js')

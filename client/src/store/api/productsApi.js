@@ -1,9 +1,21 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
+const getBaseUrl = () => {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL
+  }
+  if (typeof window !== 'undefined' && 
+      window.location.hostname !== 'localhost' && 
+      window.location.hostname !== '127.0.0.1') {
+    return 'https://vrc-production-7cfc.up.railway.app/api'
+  }
+  return 'http://localhost:5000/api'
+}
+
 export const productsApi = createApi({
   reducerPath: 'productsApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}`,
+    baseUrl: getBaseUrl(),
     prepareHeaders: (headers, { getState }) => {
       const token = getState().auth?.token || localStorage.getItem('vrc_token')
       if (token) {

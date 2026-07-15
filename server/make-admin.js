@@ -1,7 +1,10 @@
 import mongoose from 'mongoose'
 import User from './models/User.js'
 
-const MONGODB_URI = 'mongodb://127.0.0.1:27017/vrc'
+import dotenv from 'dotenv'
+dotenv.config()
+
+const MONGODB_URI = process.env.MONGODB_URI || process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/vrc'
 
 async function listAndPromoteUsers() {
   await mongoose.connect(MONGODB_URI)

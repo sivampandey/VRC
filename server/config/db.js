@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 import User from '../models/User.js'
 
 const connectDB = async () => {
-  const defaultUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/vrc'
+  const defaultUri = process.env.MONGODB_URI || process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/vrc'
   
   // Try both 127.0.0.1 and localhost if using default/local DB to handle IPv4/IPv6 loopback configuration discrepancies
   let urisToTry = [defaultUri]

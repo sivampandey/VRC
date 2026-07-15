@@ -35,7 +35,7 @@ export default function ProductDetail() {
     : (product?.ratings?.average || 4.8)
 
   // Wishlist Check
-  const isWishlisted = useSelector((state) => 
+  const isWishlisted = useSelector((state) =>
     product ? selectIsWishlisted(product._id)(state) : false
   )
 
@@ -57,8 +57,8 @@ export default function ProductDetail() {
   // Get active size details
   const activeSizeObj = product.sizes.find(s => s.label === selectedSize)
   const displayPrice = activeSizeObj ? activeSizeObj.price : product.price
-  const displaySalePrice = product.salePrice 
-    ? (activeSizeObj ? Math.round(activeSizeObj.price * (product.salePrice / product.price)) : product.salePrice) 
+  const displaySalePrice = product.salePrice
+    ? (activeSizeObj ? Math.round(activeSizeObj.price * (product.salePrice / product.price)) : product.salePrice)
     : null
 
   const handleAddToCart = () => {
@@ -136,29 +136,29 @@ export default function ProductDetail() {
 
       <div className="py-24 bg-offwhite min-h-screen text-left font-jost">
         <div className="container max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           {/* Back link */}
           <Link to="/shop" className="text-xs font-cinzel text-gold font-bold hover:text-navy flex items-center gap-1.5 uppercase mb-8">
             <ArrowLeft className="w-4 h-4" /> Back to Shop Gallery
           </Link>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-            
+
             {/* Left Side: Zoomable Image Container */}
             <div className="space-y-4">
-              <div 
+              <div
                 className="relative aspect-[3/4] w-full bg-cream overflow-hidden border border-border/40 cursor-zoom-in"
                 onMouseMove={handleMouseMove}
                 onMouseLeave={handleMouseLeave}
               >
-                <img 
-                  src={product.images[0].url} 
-                  alt={product.images[0].alt || product.name} 
+                <img
+                  src={product.images[0].url}
+                  alt={product.images[0].alt || product.name}
                   className="w-full h-full object-cover"
                 />
-                
+
                 {/* Floating Zoom overlay box */}
-                <div 
+                <div
                   className="absolute inset-0 pointer-events-none bg-no-repeat bg-[length:200%]"
                   style={zoomStyle}
                 ></div>
@@ -221,11 +221,10 @@ export default function ProductDetail() {
                     <button
                       key={s.label}
                       onClick={() => setSelectedSize(s.label)}
-                      className={`px-4 py-2.5 border text-xs tracking-wider transition font-jost cursor-pointer ${
-                        selectedSize === s.label
+                      className={`px-4 py-2.5 border text-xs tracking-wider transition font-jost cursor-pointer ${selectedSize === s.label
                           ? 'border-gold bg-gold/10 text-navy font-bold'
                           : 'border-border/60 text-muted hover:border-navy'
-                      }`}
+                        }`}
                     >
                       {s.label}
                     </button>
@@ -255,7 +254,7 @@ export default function ProductDetail() {
                   Place Order
                 </Button>
 
-                <button 
+                <button
                   onClick={handleWishlist}
                   className={`p-3.5 border border-border/60 hover:bg-cream transition cursor-pointer flex items-center justify-center ${isWishlisted ? 'text-burgundy bg-burgundy/5 border-burgundy/40' : 'text-navy'}`}
                 >
@@ -264,9 +263,9 @@ export default function ProductDetail() {
               </div>
 
               {/* WhatsApp Enquiry option */}
-              <a 
-                href={getWhatsAppEnquiryLink()} 
-                target="_blank" 
+              <a
+                href={getWhatsAppEnquiryLink()}
+                target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 w-full bg-[#25D366] hover:bg-[#20ba59] text-white font-cinzel text-xs font-semibold tracking-widest py-3.5 uppercase transition shadow-md hover:shadow-lg"
               >
@@ -295,14 +294,14 @@ export default function ProductDetail() {
               {/* Details Tabs Section */}
               <div className="pt-6 border-t border-border/20">
                 <div className="flex border-b border-border/20 text-xs font-cinzel uppercase font-semibold tracking-widest text-muted">
-                  <button 
-                    onClick={() => setActiveTab('description')} 
+                  <button
+                    onClick={() => setActiveTab('description')}
                     className={`pb-2.5 pr-4 border-b-2 transition cursor-pointer ${activeTab === 'description' ? 'border-gold text-navy font-bold' : 'border-transparent'}`}
                   >
                     Details
                   </button>
-                  <button 
-                    onClick={() => setActiveTab('care')} 
+                  <button
+                    onClick={() => setActiveTab('care')}
                     className={`pb-2.5 px-4 border-b-2 transition cursor-pointer ${activeTab === 'care' ? 'border-gold text-navy font-bold' : 'border-transparent'}`}
                   >
                     Dimensions & Care
@@ -338,8 +337,8 @@ export default function ProductDetail() {
             <h2 className="font-cormorant text-2xl text-navy font-bold text-center mb-10">Client Reviews</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              
-              {/* Ratings Summary (Amazon/Flipkart style) */}
+
+              {/* Ratings Summary */}
               <div className="space-y-4">
                 <h3 className="font-cinzel text-xs font-bold text-navy uppercase tracking-wider">Overall Rating</h3>
                 <div className="flex items-center gap-3">

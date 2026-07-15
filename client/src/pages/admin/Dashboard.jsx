@@ -81,6 +81,13 @@ export default function Dashboard() {
   const [editingId, setEditingId] = useState(null)
   const [showProductForm, setShowProductForm] = useState(false)
   const [trackingState, setTrackingState] = useState({ orderId: '', trackingNumber: '', trackingUrl: '' })
+  const [orderFilter, setOrderFilter] = useState('all')
+
+  const filteredOrders = orders?.filter(order => {
+    if (orderFilter === 'all') return true
+    if (orderFilter === 'requests') return ['return_requested', 'exchange_requested'].includes(order.orderStatus)
+    return true
+  })
 
   const handleProductSubmit = async (e) => {
     e.preventDefault()
@@ -698,6 +705,27 @@ export default function Dashboard() {
                 </form>
               )}
 
+              {/* Order Filtering Pills */}
+              <div className="flex gap-3 bg-white/40 backdrop-blur-md p-1.5 border border-slate-200/30 rounded-lg w-fit mb-2">
+                <button
+                  onClick={() => setOrderFilter('all')}
+                  className={`px-4 py-2 text-[10px] font-cinzel tracking-wider uppercase font-bold transition rounded-md cursor-pointer ${orderFilter === 'all' ? 'bg-[#160400] text-[#FAF5F0]' : 'text-slate-500 hover:text-[#160400]'}`}
+                >
+                  All Orders ({orders?.length || 0})
+                </button>
+                <button
+                  onClick={() => setOrderFilter('requests')}
+                  className={`px-4 py-2 text-[10px] font-cinzel tracking-wider uppercase font-bold transition rounded-md cursor-pointer flex items-center gap-1.5 ${orderFilter === 'requests' ? 'bg-[#8B1C1C] text-[#FAF5F0]' : 'text-slate-500 hover:text-[#8B1C1C]'}`}
+                >
+                  Return / Exchange Requests
+                  {orders?.filter(o => ['return_requested', 'exchange_requested'].includes(o.orderStatus)).length > 0 && (
+                    <span className="bg-white text-[#8B1C1C] text-[9px] px-1.5 py-0.5 rounded-full font-sans font-bold animate-pulse">
+                      {orders.filter(o => ['return_requested', 'exchange_requested'].includes(o.orderStatus)).length}
+                    </span>
+                  )}
+                </button>
+              </div>
+
               {/* Orders table panel */}
               <div className="bg-white border border-slate-100 rounded-xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.015)]">
                 <div className="overflow-x-auto w-full">
@@ -712,7 +740,7 @@ export default function Dashboard() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 text-charcoal">
-                      {orders?.map((order) => (
+                      {filteredOrders?.map((order) => (
                         <tr key={order._id} className="hover:bg-slate-50/50 transition">
                           <td className="p-4 pl-6 font-mono font-bold text-navy">{order.orderNumber}</td>
                           <td className="p-4 font-semibold">{order.shippingAddress.name}</td>

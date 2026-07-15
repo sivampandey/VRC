@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ChevronRight, Package, Truck, CheckCircle2, Clock, XCircle, MapPin, CreditCard, Download } from 'lucide-react'
 import { useGetOrderByIdQuery, useCancelOrderMutation, useRequestReturnMutation } from '../../store/api/ordersApi'
+import { useAddReviewMutation } from '../../store/api/productsApi'
 import { formatINR, formatDate } from '../../utils/format'
 import toast from 'react-hot-toast'
 
@@ -66,6 +67,48 @@ export default function OrderDetail() {
   const [returnType, setReturnType] = useState('return') // 'return' or 'exchange'
   const [returnReason, setReturnReason] = useState('Size is incorrect')
   const [returnNotes, setReturnNotes] = useState('')
+
+  const [addReview, { isLoading: isSubmittingReviewText }] = useAddReviewMutation()
+
+  // Review modal state
+  const [showReviewModal, setShowReviewModal] = useState(false)
+  const [reviewProduct, setReviewProduct] = useState(null)
+  const [reviewRating, setReviewRating] = useState(5)
+  const [reviewTitle, setReviewTitle] = useState('')
+  const [reviewComment, setReviewComment] = useState('')
+  const [reviewFiles, setReviewFiles] = useState([])
+
+  const handleWriteReviewClick = (item) => {
+    setReviewProduct(item)
+    setReviewRating(5)
+    setReviewTitle('')
+    setReviewComment('')
+    setReviewFiles([])
+    setShowReviewModal(true)
+  }
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault()
+    if (!reviewProduct) return
+
+    const formData = new FormData()
+    formData.append('rating', reviewRating)
+    formData.append('title', reviewTitle)
+    formData.append('comment', reviewComment)
+    if (reviewFiles && reviewFiles.length > 0) {
+      for (let i = 0; i < reviewFiles.length; i++) {
+        formData.append('reviewImages', reviewFiles[i])
+      }
+    }
+
+    try {
+      await addReview({ id: reviewProduct.product, formData }).unwrap()
+      toast.success('Thank you! Review submitted successfully.')
+      setShowReviewModal(false)
+    } catch (err) {
+      toast.error(err?.data?.message || 'Failed to submit review.')
+    }
+  }
 
   const handleCancelClick = async () => {
     if (window.confirm('Are you sure you want to cancel this order?')) {
@@ -208,7 +251,16 @@ export default function OrderDetail() {
                       {item.name}
                     </h4>
                     <p className="text-[12px] text-muted font-light mb-1">{item.size} · Qty: {item.quantity}</p>
-                    <p className="font-jost text-[13px] text-navy font-medium">{formatINR(item.price)}</p>
+                    <p className="font-jost text-[13px] text-navy font-medium mb-2">{formatINR(item.price)}</p>
+                    
+                    {order.orderStatus === 'delivered' && (
+                      <button
+                        onClick={() => handleWriteReviewClick(item)}
+                        className="text-[10px] font-cinzel text-gold hover:text-navy uppercase underline font-semibold tracking-wider cursor-pointer"
+                      >
+                        Write a Review
+                      </button>
+                    )}
                   </div>
                   <div className="text-right flex-shrink-0">
                     <p className="font-cormorant text-[17px] text-navy font-medium">
@@ -426,6 +478,92 @@ export default function OrderDetail() {
                 <button
                   type="button"
                   onClick={() => setShowReturnModal(false)}
+                  className="px-6 border border-cream-dark text-muted font-cinzel text-[9.5px] tracking-[0.12em] py-3.5 hover:border-navy hover:text-navy transition-colors uppercase font-bold cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {/* Product Review Modal */}
+      {showReviewModal && reviewProduct && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[2000] flex items-center justify-center p-4">
+          <div className="bg-white border border-cream-dark w-full max-w-[460px] p-6 sm:p-8 space-y-6 text-left animate-fadeIn">
+            <div className="flex justify-between items-center border-b border-cream-dark pb-3">
+              <h3 className="font-cinzel text-xs font-bold text-navy uppercase tracking-wider">Write a Product Review</h3>
+              <button onClick={() => setShowReviewModal(false)} className="text-muted hover:text-navy text-sm font-semibold">✕</button>
+            </div>
+            
+            <form onSubmit={handleReviewSubmit} className="space-y-4 font-jost text-xs">
+              <div className="text-center pb-2">
+                <span className="font-cormorant text-lg text-navy font-bold">{reviewProduct.name}</span>
+                <p className="text-[11px] text-muted">Size: {reviewProduct.size}</p>
+              </div>
+
+              <div className="space-y-1.5 text-center">
+                <label className="block text-[10px] font-cinzel font-bold text-navy uppercase tracking-wider mb-2">Rating</label>
+                <div className="flex justify-center gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setReviewRating(star)}
+                      className="text-2xl focus:outline-none transition-colors"
+                    >
+                      <span className={star <= reviewRating ? 'text-gold' : 'text-cream-dark'}>★</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-[10px] font-cinzel font-bold text-navy uppercase tracking-wider">Review Title</label>
+                <input
+                  type="text"
+                  value={reviewTitle}
+                  onChange={(e) => setReviewTitle(e.target.value)}
+                  className="w-full bg-offwhite border border-border/60 p-3 text-sm focus:outline-none"
+                  placeholder="e.g. Beautiful quality and texture!"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-[10px] font-cinzel font-bold text-navy uppercase tracking-wider">Review Comments</label>
+                <textarea
+                  value={reviewComment}
+                  onChange={(e) => setReviewComment(e.target.value)}
+                  className="w-full bg-offwhite border border-border/60 p-3 text-sm focus:outline-none h-24 resize-none"
+                  placeholder="Share your experience with this rug's texture, weave pattern, and colors..."
+                  required
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-[10px] font-cinzel font-bold text-navy uppercase tracking-wider">Upload Product Images (Optional)</label>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={(e) => setReviewFiles(e.target.files)}
+                  className="w-full text-xs text-muted"
+                />
+                <p className="text-[10px] text-muted italic">You can upload up to 3 images of the rug in your home.</p>
+              </div>
+
+              <div className="flex gap-3 pt-3 border-t border-cream-dark">
+                <button
+                  type="submit"
+                  disabled={isSubmittingReviewText}
+                  className="flex-grow bg-navy text-cream font-cinzel text-[9.5px] tracking-[0.12em] py-3.5 hover:bg-navy-light transition-colors uppercase font-bold cursor-pointer disabled:opacity-50"
+                >
+                  {isSubmittingReviewText ? 'Submitting...' : 'Submit Review'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowReviewModal(false)}
                   className="px-6 border border-cream-dark text-muted font-cinzel text-[9.5px] tracking-[0.12em] py-3.5 hover:border-navy hover:text-navy transition-colors uppercase font-bold cursor-pointer"
                 >
                   Cancel

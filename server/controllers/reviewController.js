@@ -1,5 +1,18 @@
 import Review from '../models/Review.js'
 import Product from '../models/Product.js'
+import cloudinary from '../config/cloudinary.js'
+
+const uploadToCloudinary = (fileBuffer, folder = 'vrc_reviews') => {
+  return new Promise((resolve, reject) => {
+    const fileBase64 = fileBuffer.toString('base64')
+    const fileUri = `data:image/jpeg;base64,${fileBase64}`
+
+    cloudinary.uploader.upload(fileUri, { folder }, (error, result) => {
+      if (error) return reject(error)
+      resolve(result.secure_url)
+    })
+  })
+}
 
 const recalculateProductRating = async (productId) => {
   const reviews = await Review.find({ product: productId, isApproved: true })
@@ -21,6 +34,16 @@ export const addReview = async (req, res, next) => {
       return res.status(404).json({ message: 'Product not found.' })
     }
 
+    let imageUrls = []
+    if (req.files && req.files.length > 0) {
+      try {
+        const uploadPromises = req.files.map(file => uploadToCloudinary(file.buffer))
+        imageUrls = await Promise.all(uploadPromises)
+      } catch (uploadErr) {
+        console.warn('Image upload failed — proceeding without images:', uploadErr.message)
+      }
+    }
+
     const review = new Review({
       product: productId,
       user: req.user ? req.user._id : undefined,
@@ -28,11 +51,14 @@ export const addReview = async (req, res, next) => {
       rating: Number(rating),
       title,
       comment,
-      isApproved: false // Admin approval required by default
+      images: imageUrls,
+      isApproved: true, // Auto-approve to show instantly on the product details page
+      isVerifiedPurchase: true
     })
 
     await review.save()
-    return res.status(201).json({ message: 'Review submitted for moderation.', review })
+    await recalculateProductRating(productId)
+    return res.status(201).json({ message: 'Review submitted successfully.', review })
   } catch (error) {
     next(error)
   }

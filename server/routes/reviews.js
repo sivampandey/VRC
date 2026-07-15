@@ -3,9 +3,11 @@ import { addReview, getProductReviews, getPendingReviews, approveReview, deleteR
 import { protect } from '../middleware/auth.js'
 import { isAdmin } from '../middleware/isAdmin.js'
 
+import upload from '../middleware/upload.js'
+
 const router = express.Router()
 
-router.post('/products/:id/reviews', protect, addReview)
+router.post('/products/:id/reviews', protect, upload.array('reviewImages', 3), addReview)
 router.get('/products/:id/reviews', getProductReviews)
 
 router.get('/pending', protect, isAdmin, getPendingReviews)

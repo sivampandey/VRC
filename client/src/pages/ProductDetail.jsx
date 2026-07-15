@@ -5,6 +5,7 @@ import { Star, Heart, ArrowLeft, MessageSquare, Truck, ShieldCheck, RefreshCw } 
 import { useDispatch, useSelector } from 'react-redux'
 import { selectIsWishlisted, toggleWishlist } from '../store/wishlistSlice'
 import { addToCart } from '../store/cartSlice'
+import { useGetProductReviewsQuery } from '../store/api/productsApi'
 import { getProductBySlug, products } from '../data/products'
 import toast from 'react-hot-toast'
 import Button from '../components/ui/Button'
@@ -22,6 +23,16 @@ export default function ProductDetail() {
   const [zoomBackground, setZoomBackground] = useState('')
 
   const product = getProductBySlug(slug)
+
+  // Fetch reviews dynamically from backend
+  const { data: dbReviews } = useGetProductReviewsQuery(product?._id, { skip: !product?._id })
+  const reviewsList = dbReviews || []
+
+  // Dynamic rating summary
+  const totalReviewsCount = reviewsList.length
+  const averageRating = totalReviewsCount > 0
+    ? (reviewsList.reduce((acc, r) => acc + r.rating, 0) / totalReviewsCount).toFixed(1)
+    : (product?.ratings?.average || 4.8)
 
   // Wishlist Check
   const isWishlisted = useSelector((state) => 
@@ -319,6 +330,103 @@ export default function ProductDetail() {
 
             </div>
 
+          </div>
+
+          {/* Reviews Section */}
+          <div className="pt-24 border-t border-border/20">
+            <span className="section-label text-center block">Customer Voices</span>
+            <h2 className="font-cormorant text-2xl text-navy font-bold text-center mb-10">Client Reviews</h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              
+              {/* Ratings Summary (Amazon/Flipkart style) */}
+              <div className="space-y-4">
+                <h3 className="font-cinzel text-xs font-bold text-navy uppercase tracking-wider">Overall Rating</h3>
+                <div className="flex items-center gap-3">
+                  <span className="font-cormorant text-5xl text-navy font-bold">{averageRating}</span>
+                  <div>
+                    <div className="flex text-gold">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <span key={star} className="text-lg">
+                          {star <= Math.round(Number(averageRating)) ? '★' : '☆'}
+                        </span>
+                      ))}
+                    </div>
+                    <p className="text-[11.5px] text-muted font-light mt-0.5">Based on {totalReviewsCount || product.ratings?.count || 0} reviews</p>
+                  </div>
+                </div>
+
+                {/* Star breakdown bars */}
+                <div className="space-y-2 pt-2 text-[11.5px] font-jost text-charcoal/80">
+                  {[5, 4, 3, 2, 1].map((stars) => {
+                    const countOfStars = reviewsList.filter(r => r.rating === stars).length
+                    const percentage = totalReviewsCount > 0 ? (countOfStars / totalReviewsCount) * 100 : 0
+                    return (
+                      <div key={stars} className="flex items-center gap-3">
+                        <span className="w-12 text-left">{stars} Star</span>
+                        <div className="flex-grow h-2 bg-cream rounded overflow-hidden">
+                          <div className="bg-gold h-full" style={{ width: `${percentage}%` }} />
+                        </div>
+                        <span className="w-8 text-right font-medium">{Math.round(percentage)}%</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Reviews List */}
+              <div className="md:col-span-2 space-y-6">
+                <h3 className="font-cinzel text-xs font-bold text-navy uppercase tracking-wider pb-3 border-b border-cream-dark">
+                  Recent Feedback
+                </h3>
+
+                {reviewsList.length === 0 ? (
+                  <p className="text-xs text-muted italic font-light pt-4">No verified reviews submitted for this rug yet. Be the first to purchase and review!</p>
+                ) : (
+                  <div className="divide-y divide-cream-dark space-y-6">
+                    {reviewsList.map((rev) => (
+                      <div key={rev._id} className="pt-6 first:pt-0 space-y-2.5 text-left font-jost">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <span className="font-cinzel text-[10px] tracking-wider font-bold text-navy">{rev.name}</span>
+                            {rev.isVerifiedPurchase && (
+                              <span className="ml-2 text-[9px] bg-green-50 text-green-700 px-1.5 py-0.5 rounded font-cinzel font-bold">
+                                Verified Purchase
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-[11px] text-muted">{new Date(rev.createdAt).toLocaleDateString()}</span>
+                        </div>
+
+                        {/* Stars and Title */}
+                        <div className="flex items-center gap-2">
+                          <div className="flex text-gold text-sm">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <span key={star}>{star <= rev.rating ? '★' : '☆'}</span>
+                            ))}
+                          </div>
+                          {rev.title && <span className="font-bold text-navy text-xs">{rev.title}</span>}
+                        </div>
+
+                        {/* Comment text */}
+                        <p className="text-xs text-charcoal/80 font-light leading-relaxed">{rev.comment}</p>
+
+                        {/* Review images */}
+                        {rev.images && rev.images.length > 0 && (
+                          <div className="flex gap-2.5 pt-1.5">
+                            {rev.images.map((imgUrl, idx) => (
+                              <a key={idx} href={imgUrl} target="_blank" rel="noopener noreferrer" className="w-16 h-16 sm:w-20 sm:h-20 bg-warmcream border border-cream-dark overflow-hidden flex-shrink-0">
+                                <img src={imgUrl} alt={`Customer upload ${idx + 1}`} className="w-full h-full object-cover hover:scale-105 transition duration-300" />
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Related Products list */}

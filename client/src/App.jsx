@@ -1,5 +1,6 @@
 import React from 'react'
 import { Routes, Route, Outlet, useLocation } from 'react-router-dom'
+import { SpeedInsights } from '@vercel/speed-insights/react'
 
 // Layout & UI Imports
 import Navbar from './components/layout/Navbar'
@@ -59,6 +60,7 @@ export default function App() {
   return (
     <>
       <ScrollToTop />
+      <SpeedInsights />
       <Routes>
         {/* ── Main site layout (with Navbar + Footer) ── */}
         <Route path="/" element={<Layout />}>

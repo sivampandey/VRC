@@ -8,12 +8,16 @@ import { formatINR, formatDate } from '../../utils/format'
 
 // ─── Status config ────────────────────────────────────────────
 const STATUS = {
-  placed:     { label: 'Order Placed', color: 'bg-sky-50 text-sky-700',      icon: Clock        },
-  confirmed:  { label: 'Confirmed',    color: 'bg-indigo-50 text-indigo-700', icon: CheckCircle2 },
-  processing: { label: 'Processing',   color: 'bg-amber-50 text-amber-700',   icon: Package      },
-  shipped:    { label: 'Shipped',      color: 'bg-blue-50 text-blue-700',     icon: Truck        },
-  delivered:  { label: 'Delivered',    color: 'bg-green-50 text-green-700',   icon: CheckCircle2 },
-  cancelled:  { label: 'Cancelled',   color: 'bg-red-50 text-red-700',       icon: XCircle      },
+  placed:             { label: 'Order Placed', color: 'bg-sky-50 text-sky-700',      icon: Clock        },
+  confirmed:          { label: 'Confirmed',    color: 'bg-indigo-50 text-indigo-700', icon: CheckCircle2 },
+  processing:         { label: 'Processing',   color: 'bg-amber-50 text-amber-700',   icon: Package      },
+  shipped:            { label: 'Shipped',      color: 'bg-blue-50 text-blue-700',     icon: Truck        },
+  delivered:          { label: 'Delivered',    color: 'bg-green-50 text-green-700',   icon: CheckCircle2 },
+  cancelled:          { label: 'Cancelled',    color: 'bg-red-50 text-red-700',       icon: XCircle      },
+  return_requested:   { label: 'Return Req.',  color: 'bg-orange-50 text-orange-700',   icon: Clock        },
+  exchange_requested: { label: 'Exchange Req.',color: 'bg-purple-50 text-purple-700',   icon: Clock        },
+  returned:           { label: 'Returned',     color: 'bg-stone-50 text-stone-700',   icon: XCircle      },
+  exchanged:          { label: 'Exchanged',    color: 'bg-emerald-50 text-emerald-700', icon: CheckCircle2 },
 }
 
 // ─── Order Timeline ───────────────────────────────────────────

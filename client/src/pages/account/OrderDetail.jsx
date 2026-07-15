@@ -1,17 +1,23 @@
 // src/pages/account/OrderDetail.jsx
 
+import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ChevronRight, Package, Truck, CheckCircle2, Clock, XCircle, MapPin, CreditCard, Download } from 'lucide-react'
-import { useGetOrderByIdQuery } from '../../store/api/ordersApi'
+import { useGetOrderByIdQuery, useCancelOrderMutation, useRequestReturnMutation } from '../../store/api/ordersApi'
 import { formatINR, formatDate } from '../../utils/format'
+import toast from 'react-hot-toast'
 
 const STATUS = {
-  placed:     { label: 'Order Placed', color: 'bg-sky-50 text-sky-700',      icon: Clock        },
-  confirmed:  { label: 'Confirmed',    color: 'bg-indigo-50 text-indigo-700', icon: CheckCircle2 },
-  processing: { label: 'Processing',   color: 'bg-amber-50 text-amber-700',   icon: Package      },
-  shipped:    { label: 'Shipped',      color: 'bg-blue-50 text-blue-700',     icon: Truck        },
-  delivered:  { label: 'Delivered',    color: 'bg-green-50 text-green-700',   icon: CheckCircle2 },
-  cancelled:  { label: 'Cancelled',   color: 'bg-red-50 text-red-700',       icon: XCircle      },
+  placed:             { label: 'Order Placed', color: 'bg-sky-50 text-sky-700',      icon: Clock        },
+  confirmed:          { label: 'Confirmed',    color: 'bg-indigo-50 text-indigo-700', icon: CheckCircle2 },
+  processing:         { label: 'Processing',   color: 'bg-amber-50 text-amber-700',   icon: Package      },
+  shipped:            { label: 'Shipped',      color: 'bg-blue-50 text-blue-700',     icon: Truck        },
+  delivered:          { label: 'Delivered',    color: 'bg-green-50 text-green-700',   icon: CheckCircle2 },
+  cancelled:          { label: 'Cancelled',    color: 'bg-red-50 text-red-700',       icon: XCircle      },
+  return_requested:   { label: 'Return Req.',  color: 'bg-orange-50 text-orange-700',   icon: Clock        },
+  exchange_requested: { label: 'Exchange Req.',color: 'bg-purple-50 text-purple-700',   icon: Clock        },
+  returned:           { label: 'Returned',     color: 'bg-stone-50 text-stone-700',   icon: XCircle      },
+  exchanged:          { label: 'Exchanged',    color: 'bg-emerald-50 text-emerald-700', icon: CheckCircle2 },
 }
 
 function OrderTimeline({ status }) {
@@ -51,6 +57,42 @@ export default function OrderDetail() {
   const { id }  = useParams()
   const { data, isLoading, isError } = useGetOrderByIdQuery(id)
   const order = data && !data.order ? data : data?.order
+
+  const [cancelOrder, { isLoading: isCancelling }] = useCancelOrderMutation()
+  const [requestReturn, { isLoading: isSubmittingReturn }] = useRequestReturnMutation()
+
+  // Return & Exchange form state
+  const [showReturnModal, setShowReturnModal] = useState(false)
+  const [returnType, setReturnType] = useState('return') // 'return' or 'exchange'
+  const [returnReason, setReturnReason] = useState('Size is incorrect')
+  const [returnNotes, setReturnNotes] = useState('')
+
+  const handleCancelClick = async () => {
+    if (window.confirm('Are you sure you want to cancel this order?')) {
+      try {
+        await cancelOrder(id).unwrap()
+        toast.success('Order cancelled successfully.')
+      } catch (err) {
+        toast.error(err?.data?.message || 'Failed to cancel order.')
+      }
+    }
+  }
+
+  const handleReturnSubmit = async (e) => {
+    e.preventDefault()
+    try {
+      await requestReturn({
+        id,
+        actionType: returnType,
+        reason: returnReason,
+        notes: returnNotes
+      }).unwrap()
+      toast.success(`${returnType === 'return' ? 'Return' : 'Exchange'} requested successfully.`)
+      setShowReturnModal(false)
+    } catch (err) {
+      toast.error(err?.data?.message || 'Failed to submit request.')
+    }
+  }
 
   if (isLoading) {
     return (
@@ -262,9 +304,137 @@ export default function OrderDetail() {
               </div>
             </div>
           </div>
+
+          {/* Order Actions (Cancel, Return/Exchange) */}
+          {((order.orderStatus === 'placed' || order.orderStatus === 'confirmed') || 
+            (order.orderStatus === 'delivered')) && (
+            <div className="bg-white border border-cream-dark p-6 space-y-4">
+              <span className="font-cinzel text-[10.5px] tracking-[0.18em] text-navy block border-b pb-3 mb-2 font-bold">ACTIONS</span>
+              
+              {/* Cancel Button */}
+              {(order.orderStatus === 'placed' || order.orderStatus === 'confirmed') && (
+                <button
+                  disabled={isCancelling}
+                  onClick={handleCancelClick}
+                  className="w-full bg-[#8B1C1C] text-white font-cinzel text-[9.5px] tracking-[0.12em] py-3.5 hover:bg-red-800 transition-colors uppercase font-bold cursor-pointer disabled:opacity-50"
+                >
+                  {isCancelling ? 'Cancelling...' : 'Cancel Order'}
+                </button>
+              )}
+
+              {/* Return / Exchange Button */}
+              {order.orderStatus === 'delivered' && (
+                (() => {
+                  const deliveryDate = order.deliveredAt || order.updatedAt
+                  const daysDiff = (new Date() - new Date(deliveryDate)) / (1000 * 60 * 60 * 24)
+                  if (daysDiff <= 7) {
+                    return (
+                      <div className="space-y-3">
+                        <p className="text-[11.5px] text-muted font-light leading-relaxed">
+                          This order was delivered recently. You can request a refund return or an exchange within 7 days of delivery.
+                        </p>
+                        <button
+                          onClick={() => setShowReturnModal(true)}
+                          className="w-full bg-navy text-cream font-cinzel text-[9.5px] tracking-[0.12em] py-3.5 hover:bg-navy-light transition-colors uppercase font-bold cursor-pointer"
+                        >
+                          Return / Exchange
+                        </button>
+                      </div>
+                    )
+                  } else {
+                    return (
+                      <p className="text-[11px] text-[#8B1C1C] italic font-light">
+                        The 7-day return and exchange window for this order has expired.
+                      </p>
+                    )
+                  }
+                })()
+              )}
+            </div>
+          )}
         </div>
 
       </div>
+
+      {/* Return/Exchange Modal */}
+      {showReturnModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[2000] flex items-center justify-center p-4">
+          <div className="bg-white border border-cream-dark w-full max-w-[460px] p-6 sm:p-8 space-y-6 text-left animate-fadeIn">
+            <div className="flex justify-between items-center border-b border-cream-dark pb-3">
+              <h3 className="font-cinzel text-xs font-bold text-navy uppercase tracking-wider">Request Return / Exchange</h3>
+              <button onClick={() => setShowReturnModal(false)} className="text-muted hover:text-navy text-sm font-semibold">✕</button>
+            </div>
+            
+            <form onSubmit={handleReturnSubmit} className="space-y-4 font-jost text-xs">
+              <div className="space-y-1.5">
+                <label className="block text-[10px] font-cinzel font-bold text-navy uppercase tracking-wider">Action Type</label>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="returnType"
+                      checked={returnType === 'return'}
+                      onChange={() => setReturnType('return')}
+                    />
+                    <span>Refund Return</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="returnType"
+                      checked={returnType === 'exchange'}
+                      onChange={() => setReturnType('exchange')}
+                    />
+                    <span>Size / Product Exchange</span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-[10px] font-cinzel font-bold text-navy uppercase tracking-wider">Reason for request</label>
+                <select
+                  value={returnReason}
+                  onChange={(e) => setReturnReason(e.target.value)}
+                  className="w-full bg-offwhite border border-border/60 p-3 text-sm focus:outline-none"
+                >
+                  <option value="Size incorrect">Size is incorrect / not fitting</option>
+                  <option value="Product not as expected">Product design/color not as expected</option>
+                  <option value="Damaged item">Received item in damaged condition</option>
+                  <option value="Changed mind">Changed my mind / No longer needed</option>
+                </select>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-[10px] font-cinzel font-bold text-navy uppercase tracking-wider">Additional details / notes</label>
+                <textarea
+                  value={returnNotes}
+                  onChange={(e) => setReturnNotes(e.target.value)}
+                  className="w-full bg-offwhite border border-border/60 p-3 text-sm focus:outline-none h-24 resize-none"
+                  placeholder="Provide sizing or product specifics here..."
+                  required
+                />
+              </div>
+
+              <div className="flex gap-3 pt-3 border-t border-cream-dark">
+                <button
+                  type="submit"
+                  disabled={isSubmittingReturn}
+                  className="flex-grow bg-navy text-cream font-cinzel text-[9.5px] tracking-[0.12em] py-3.5 hover:bg-navy-light transition-colors uppercase font-bold cursor-pointer disabled:opacity-50"
+                >
+                  {isSubmittingReturn ? 'Submitting...' : 'Submit Request'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowReturnModal(false)}
+                  className="px-6 border border-cream-dark text-muted font-cinzel text-[9.5px] tracking-[0.12em] py-3.5 hover:border-navy hover:text-navy transition-colors uppercase font-bold cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

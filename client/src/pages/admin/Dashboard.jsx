@@ -729,6 +729,10 @@ export default function Dashboard() {
                               <option value="shipped">shipped</option>
                               <option value="delivered">delivered</option>
                               <option value="cancelled">cancelled</option>
+                              <option value="return_requested">return_requested</option>
+                              <option value="exchange_requested">exchange_requested</option>
+                              <option value="returned">returned</option>
+                              <option value="exchanged">exchanged</option>
                             </select>
                           </td>
                           <td className="p-4 pr-6 text-right">

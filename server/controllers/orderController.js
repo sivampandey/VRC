@@ -280,6 +280,23 @@ export const updateOrderStatus = async (req, res, next) => {
       if (orderStatus === 'delivered') {
         order.deliveredAt = new Date()
       }
+
+      // Restore stock if cancelled by Admin
+      if (orderStatus === 'cancelled' && oldStatus !== 'cancelled') {
+        for (const item of order.items) {
+          const product = await Product.findById(item.product)
+          if (product) {
+            const sizeObj = product.sizes.find(s => s.label === item.size)
+            if (sizeObj) {
+              sizeObj.stock += item.quantity
+            }
+            if (product.totalSold >= item.quantity) {
+              product.totalSold -= item.quantity
+            }
+            await product.save()
+          }
+        }
+      }
     }
     if (paymentStatus) {
       order.paymentStatus = paymentStatus
@@ -339,6 +356,118 @@ export const updateOrderTracking = async (req, res, next) => {
         text
       }).then(sent => {
         if (sent) console.log(`[Email] Tracking update email sent to ${emailTo}`)
+      })
+    }
+
+    return res.json(order)
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const cancelMyOrder = async (req, res, next) => {
+  try {
+    const order = await Order.findById(req.params.id)
+    if (!order) {
+      return res.status(404).json({ message: 'Order reference not found.' })
+    }
+
+    // Check authorization: User must be the owner of the order
+    if (order.user?.toString() !== req.user._id.toString() && order.guestEmail !== req.user.email) {
+      return res.status(403).json({ message: 'Not authorized to cancel this order.' })
+    }
+
+    // Check status: Can only cancel if order status is 'placed' or 'confirmed'
+    if (!['placed', 'confirmed'].includes(order.orderStatus)) {
+      return res.status(400).json({ message: 'Order cannot be cancelled once it is processed or shipped.' })
+    }
+
+    const oldStatus = order.orderStatus
+    order.orderStatus = 'cancelled'
+    await order.save()
+
+    // Restore stock
+    for (const item of order.items) {
+      const product = await Product.findById(item.product)
+      if (product) {
+        const sizeObj = product.sizes.find(s => s.label === item.size)
+        if (sizeObj) {
+          sizeObj.stock += item.quantity
+        }
+        if (product.totalSold >= item.quantity) {
+          product.totalSold -= item.quantity
+        }
+        await product.save()
+      }
+    }
+
+    // Send email on status change
+    const emailTo = order.user ? order.user.email : order.guestEmail
+    if (emailTo) {
+      const { html, text } = buildClientOrderStatusEmail(order, 'cancelled')
+      sendEmail({
+        to: emailTo,
+        subject: `📦 Order Update: CANCELLED — ${order.orderNumber}`,
+        html,
+        text
+      }).then(sent => {
+        if (sent) console.log(`[Email] Order cancellation email sent to ${emailTo}`)
+      })
+    }
+
+    return res.json(order)
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const requestReturnExchange = async (req, res, next) => {
+  try {
+    const { actionType, reason, notes } = req.body // actionType: 'return' or 'exchange'
+    
+    if (!['return', 'exchange'].includes(actionType)) {
+      return res.status(400).json({ message: 'Invalid return/exchange action type.' })
+    }
+
+    const order = await Order.findById(req.params.id)
+    if (!order) {
+      return res.status(404).json({ message: 'Order reference not found.' })
+    }
+
+    // Authorization
+    if (order.user?.toString() !== req.user._id.toString() && order.guestEmail !== req.user.email) {
+      return res.status(403).json({ message: 'Not authorized to request return for this order.' })
+    }
+
+    // Check status: Can only request return if order is delivered
+    if (order.orderStatus !== 'delivered') {
+      return res.status(400).json({ message: 'Return/exchange can only be requested for delivered orders.' })
+    }
+
+    // Check window: must be within 7 days of delivery
+    const deliveryDate = order.deliveredAt || order.updatedAt
+    const timeDiff = new Date() - new Date(deliveryDate)
+    const daysDiff = timeDiff / (1000 * 60 * 60 * 24)
+    if (daysDiff > 7) {
+      return res.status(400).json({ message: 'Return/exchange period of 7 days has expired.' })
+    }
+
+    // Update order status
+    order.orderStatus = actionType === 'return' ? 'return_requested' : 'exchange_requested'
+    order.notes = `[Return/Exchange Request: ${actionType.toUpperCase()}] Reason: ${reason}. Notes: ${notes || ''}. ${order.notes || ''}`
+    await order.save()
+
+    // Send email on status change
+    const emailTo = order.user ? order.user.email : order.guestEmail
+    if (emailTo) {
+      const { html, text } = buildClientOrderStatusEmail(order, order.orderStatus)
+      sendEmail({
+        to: emailTo,
+        subject: `📦 Order Update: ${actionType.toUpperCase()} REQUESTED — ${order.orderNumber}`,
+        html,
+        text
+      }).then(sent => {
+        if (sent) console.log(`[Email] Return/Exchange update email sent to ${emailTo}`)
       })
     }
 

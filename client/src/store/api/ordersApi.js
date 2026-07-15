@@ -21,6 +21,10 @@ export const ordersApi = createApi({
       if (token) {
         headers.set('authorization', `Bearer ${token}`)
       }
+      // Disable browser caching to enforce instant real-time updates
+      headers.set('Cache-Control', 'no-cache, no-store, must-revalidate')
+      headers.set('Pragma', 'no-cache')
+      headers.set('Expires', '0')
       return headers
     }
   }),
@@ -57,6 +61,21 @@ export const ordersApi = createApi({
     updateOrderTracking: builder.mutation({
       query: ({ id, ...body }) => ({
         url: `/orders/${id}/tracking`,
+        method: 'PUT',
+        body
+      }),
+      invalidatesTags: ['Order']
+    }),
+    cancelOrder: builder.mutation({
+      query: (id) => ({
+        url: `/orders/${id}/cancel`,
+        method: 'PUT'
+      }),
+      invalidatesTags: ['Order']
+    }),
+    requestReturn: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/orders/${id}/return`,
         method: 'PUT',
         body
       }),
@@ -122,6 +141,8 @@ export const {
   useGetAllOrdersQuery,
   useUpdateOrderStatusMutation,
   useUpdateOrderTrackingMutation,
+  useCancelOrderMutation,
+  useRequestReturnMutation,
   useCreateRazorpayOrderMutation,
   useVerifyPaymentMutation,
   useSubmitCustomInquiryMutation,

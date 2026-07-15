@@ -1,6 +1,7 @@
 import Razorpay from 'razorpay'
 import crypto from 'crypto'
 import Order from '../models/Order.js'
+import Product from '../models/Product.js'
 import { deductOrderStock } from './orderController.js'
 
 export const createRazorpayOrder = async (req, res, next) => {
@@ -22,6 +23,18 @@ export const createRazorpayOrder = async (req, res, next) => {
 
     if (appOrder.paymentStatus === 'paid') {
       return res.status(400).json({ message: 'Order is already paid.' })
+    }
+
+    // Check stock before creating Razorpay order to prevent charging for out-of-stock items
+    for (const item of appOrder.items) {
+      const product = await Product.findById(item.product)
+      if (!product || !product.isActive) {
+        return res.status(400).json({ message: `Product ${item.name || 'item'} is no longer active or available.` })
+      }
+      const sizeObj = product.sizes.find(s => s.label === item.size)
+      if (!sizeObj || sizeObj.stock < item.quantity) {
+        return res.status(400).json({ message: `Insufficient stock for ${product.name} in size ${item.size}.` })
+      }
     }
     
     const key_id = process.env.RAZORPAY_KEY_ID || 'rzp_test_placeholder'

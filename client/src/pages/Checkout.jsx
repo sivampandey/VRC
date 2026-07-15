@@ -102,6 +102,44 @@ export default function Checkout() {
       return
     }
 
+    // Programmatic Validation to prevent silent HTML5 blocks
+    if (!address.name?.trim()) {
+      toast.error('Recipient Full Name is required.')
+      return
+    }
+    if (!address.phone?.trim()) {
+      toast.error('Phone Number is required.')
+      return
+    }
+    if (!/^[6-9]\d{9}$/.test(address.phone?.trim())) {
+      toast.error('Please enter a valid 10-digit phone number.')
+      return
+    }
+    if (!guestEmail?.trim()) {
+      toast.error('Email Address is required.')
+      return
+    }
+    if (!address.line1?.trim()) {
+      toast.error('Flat, House no, Building, Street address is required.')
+      return
+    }
+    if (!address.city?.trim()) {
+      toast.error('City is required.')
+      return
+    }
+    if (!address.state?.trim()) {
+      toast.error('State is required.')
+      return
+    }
+    if (!address.pincode?.trim()) {
+      toast.error('Pincode is required.')
+      return
+    }
+    if (!/^\d{6}$/.test(address.pincode?.trim())) {
+      toast.error('Pincode must be a 6-digit number.')
+      return
+    }
+
     const orderPayload = {
       items: cartItems.map(item => ({
         product: item._id,
@@ -288,7 +326,6 @@ export default function Checkout() {
                   <input
                     type="text"
                     name="name"
-                    required
                     value={address.name}
                     onChange={handleInputChange}
                     className="w-full bg-offwhite border border-border/60 p-3 text-sm focus:outline-none"
@@ -299,7 +336,6 @@ export default function Checkout() {
                   <input
                     type="text"
                     name="phone"
-                    required
                     value={address.phone}
                     onChange={handleInputChange}
                     className="w-full bg-offwhite border border-border/60 p-3 text-sm focus:outline-none"
@@ -309,7 +345,6 @@ export default function Checkout() {
                   <label className="block text-[11px] uppercase font-cinzel font-bold text-navy mb-1.5">Email Address</label>
                   <input
                     type="email"
-                    required
                     value={guestEmail}
                     onChange={(e) => setGuestEmail(e.target.value)}
                     className="w-full bg-offwhite border border-border/60 p-3 text-sm focus:outline-none"
@@ -320,7 +355,6 @@ export default function Checkout() {
                   <input
                     type="text"
                     name="line1"
-                    required
                     value={address.line1}
                     onChange={handleInputChange}
                     className="w-full bg-offwhite border border-border/60 p-3 text-sm focus:outline-none"
@@ -341,7 +375,6 @@ export default function Checkout() {
                   <input
                     type="text"
                     name="city"
-                    required
                     value={address.city}
                     onChange={handleInputChange}
                     className="w-full bg-offwhite border border-border/60 p-3 text-sm focus:outline-none"
@@ -352,7 +385,6 @@ export default function Checkout() {
                   <input
                     type="text"
                     name="state"
-                    required
                     value={address.state}
                     onChange={handleInputChange}
                     className="w-full bg-offwhite border border-border/60 p-3 text-sm focus:outline-none"
@@ -363,7 +395,6 @@ export default function Checkout() {
                   <input
                     type="text"
                     name="pincode"
-                    required
                     value={address.pincode}
                     onChange={handleInputChange}
                     className="w-full bg-offwhite border border-border/60 p-3 text-sm focus:outline-none"
@@ -465,7 +496,11 @@ export default function Checkout() {
                   className="w-full py-3.5 uppercase font-bold"
                   disabled={isPlacingOrder || isCreatingRzp}
                 >
-                  {isPlacingOrder || isCreatingRzp ? 'Processing Order...' : 'Complete Payment'}
+                  {isPlacingOrder || isCreatingRzp 
+                    ? 'Processing Order...' 
+                    : paymentMethod === 'cod' 
+                      ? 'Place Order' 
+                      : 'Pay & Place Order'}
                 </Button>
               </div>
 

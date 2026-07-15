@@ -371,7 +371,7 @@ export default function AuthContainer({
                         type="text"
                         {...loginRegister('email')}
                         placeholder=" "
-                        className="peer w-full bg-[#0d0103]/40 border border-white/[0.08] rounded-xl pl-11 pr-4 pt-5 pb-2 text-xs text-white focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/20 transition-all duration-300 placeholder-shown:pt-3.5 placeholder-shown:pb-3.5 font-inter shadow-[inset_0_1px_2px_rgba(255,255,255,0.01)]"
+                        className="peer w-full bg-[#0d0103]/40 border border-white/[0.08] rounded-xl pl-11 pr-4 pt-5 pb-2 text-base md:text-xs text-white focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/20 transition-all duration-300 placeholder-shown:pt-3.5 placeholder-shown:pb-3.5 font-inter shadow-[inset_0_1px_2px_rgba(255,255,255,0.01)]"
                       />
                       <label className="absolute left-11 top-1.5 text-[8px] font-cinzel tracking-wider uppercase font-bold text-white/40 transition-all duration-300 pointer-events-none peer-placeholder-shown:text-xs peer-placeholder-shown:top-3.5 peer-focus:top-1.5 peer-focus:text-[8px] peer-focus:text-[#D4AF37]">
                         Email or Phone Number
@@ -396,7 +396,7 @@ export default function AuthContainer({
                         type={showPassword ? 'text' : 'password'}
                         {...loginRegister('password')}
                         placeholder=" "
-                        className="peer w-full bg-[#0d0103]/40 border border-white/[0.08] rounded-xl pl-11 pr-11 pt-5 pb-2 text-xs text-white focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/20 transition-all duration-300 placeholder-shown:pt-3.5 placeholder-shown:pb-3.5 font-inter shadow-[inset_0_1px_2px_rgba(255,255,255,0.01)]"
+                        className="peer w-full bg-[#0d0103]/40 border border-white/[0.08] rounded-xl pl-11 pr-11 pt-5 pb-2 text-base md:text-xs text-white focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/20 transition-all duration-300 placeholder-shown:pt-3.5 placeholder-shown:pb-3.5 font-inter shadow-[inset_0_1px_2px_rgba(255,255,255,0.01)]"
                       />
                       <label className="absolute left-11 top-1.5 text-[8px] font-cinzel tracking-wider uppercase font-bold text-white/40 transition-all duration-300 pointer-events-none peer-placeholder-shown:text-xs peer-placeholder-shown:top-3.5 peer-focus:top-1.5 peer-focus:text-[8px] peer-focus:text-[#D4AF37]">
                         Password
@@ -506,7 +506,7 @@ export default function AuthContainer({
                         type="text"
                         {...registerRegister('name')}
                         placeholder=" "
-                        className="peer w-full bg-[#0d0103]/40 border border-white/[0.08] rounded-xl pl-11 pr-4 pt-5 pb-2 text-xs text-white focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/20 transition-all duration-300 placeholder-shown:pt-3.5 placeholder-shown:pb-3.5 font-inter shadow-[inset_0_1px_2px_rgba(255,255,255,0.01)]"
+                        className="peer w-full bg-[#0d0103]/40 border border-white/[0.08] rounded-xl pl-11 pr-4 pt-5 pb-2 text-base md:text-xs text-white focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/20 transition-all duration-300 placeholder-shown:pt-3.5 placeholder-shown:pb-3.5 font-inter shadow-[inset_0_1px_2px_rgba(255,255,255,0.01)]"
                       />
                       <label className="absolute left-11 top-1.5 text-[8px] font-cinzel tracking-wider uppercase font-bold text-white/40 transition-all duration-300 pointer-events-none peer-placeholder-shown:text-xs peer-placeholder-shown:top-3.5 peer-focus:top-1.5 peer-focus:text-[8px] peer-focus:text-[#D4AF37]">
                         Full Name
@@ -531,7 +531,7 @@ export default function AuthContainer({
                         type="email"
                         {...registerRegister('email')}
                         placeholder=" "
-                        className="peer w-full bg-[#0d0103]/40 border border-white/[0.08] rounded-xl pl-11 pr-4 pt-5 pb-2 text-xs text-white focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/20 transition-all duration-300 placeholder-shown:pt-3.5 placeholder-shown:pb-3.5 font-inter shadow-[inset_0_1px_2px_rgba(255,255,255,0.01)]"
+                        className="peer w-full bg-[#0d0103]/40 border border-white/[0.08] rounded-xl pl-11 pr-4 pt-5 pb-2 text-base md:text-xs text-white focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/20 transition-all duration-300 placeholder-shown:pt-3.5 placeholder-shown:pb-3.5 font-inter shadow-[inset_0_1px_2px_rgba(255,255,255,0.01)]"
                       />
                       <label className="absolute left-11 top-1.5 text-[8px] font-cinzel tracking-wider uppercase font-bold text-white/40 transition-all duration-300 pointer-events-none peer-placeholder-shown:text-xs peer-placeholder-shown:top-3.5 peer-focus:top-1.5 peer-focus:text-[8px] peer-focus:text-[#D4AF37]">
                         Email Address {signUpMethod === 'phone' && '(Optional)'}
@@ -556,7 +556,7 @@ export default function AuthContainer({
                         type="text"
                         {...registerRegister('phone')}
                         placeholder=" "
-                        className="peer w-full bg-[#0d0103]/40 border border-white/[0.08] rounded-xl pl-11 pr-4 pt-5 pb-2 text-xs text-white focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/20 transition-all duration-300 placeholder-shown:pt-3.5 placeholder-shown:pb-3.5 font-inter shadow-[inset_0_1px_2px_rgba(255,255,255,0.01)]"
+                        className="peer w-full bg-[#0d0103]/40 border border-white/[0.08] rounded-xl pl-11 pr-4 pt-5 pb-2 text-base md:text-xs text-white focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/20 transition-all duration-300 placeholder-shown:pt-3.5 placeholder-shown:pb-3.5 font-inter shadow-[inset_0_1px_2px_rgba(255,255,255,0.01)]"
                       />
                       <label className="absolute left-11 top-1.5 text-[8px] font-cinzel tracking-wider uppercase font-bold text-white/40 transition-all duration-300 pointer-events-none peer-placeholder-shown:text-xs peer-placeholder-shown:top-3.5 peer-focus:top-1.5 peer-focus:text-[8px] peer-focus:text-[#D4AF37]">
                         Phone Number {signUpMethod === 'email' && '(Optional)'}
@@ -581,7 +581,7 @@ export default function AuthContainer({
                         type={showPassword ? 'text' : 'password'}
                         {...registerRegister('password')}
                         placeholder=" "
-                        className="peer w-full bg-[#0d0103]/40 border border-white/[0.08] rounded-xl pl-11 pr-11 pt-5 pb-2 text-xs text-white focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/20 transition-all duration-300 placeholder-shown:pt-3.5 placeholder-shown:pb-3.5 font-inter shadow-[inset_0_1px_2px_rgba(255,255,255,0.01)]"
+                        className="peer w-full bg-[#0d0103]/40 border border-white/[0.08] rounded-xl pl-11 pr-11 pt-5 pb-2 text-base md:text-xs text-white focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/20 transition-all duration-300 placeholder-shown:pt-3.5 placeholder-shown:pb-3.5 font-inter shadow-[inset_0_1px_2px_rgba(255,255,255,0.01)]"
                       />
                       <label className="absolute left-11 top-1.5 text-[8px] font-cinzel tracking-wider uppercase font-bold text-white/40 transition-all duration-300 pointer-events-none peer-placeholder-shown:text-xs peer-placeholder-shown:top-3.5 peer-focus:top-1.5 peer-focus:text-[8px] peer-focus:text-[#D4AF37]">
                         Password
@@ -641,7 +641,7 @@ export default function AuthContainer({
                         type={showConfirmPassword ? 'text' : 'password'}
                         {...registerRegister('confirmPassword')}
                         placeholder=" "
-                        className="peer w-full bg-[#0d0103]/40 border border-white/[0.08] rounded-xl pl-11 pr-11 pt-5 pb-2 text-xs text-white focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/20 transition-all duration-300 placeholder-shown:pt-3.5 placeholder-shown:pb-3.5 font-inter shadow-[inset_0_1px_2px_rgba(255,255,255,0.01)]"
+                        className="peer w-full bg-[#0d0103]/40 border border-white/[0.08] rounded-xl pl-11 pr-11 pt-5 pb-2 text-base md:text-xs text-white focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/20 transition-all duration-300 placeholder-shown:pt-3.5 placeholder-shown:pb-3.5 font-inter shadow-[inset_0_1px_2px_rgba(255,255,255,0.01)]"
                       />
                       <label className="absolute left-11 top-1.5 text-[8px] font-cinzel tracking-wider uppercase font-bold text-white/40 transition-all duration-300 pointer-events-none peer-placeholder-shown:text-xs peer-placeholder-shown:top-3.5 peer-focus:top-1.5 peer-focus:text-[8px] peer-focus:text-[#D4AF37]">
                         Confirm Password

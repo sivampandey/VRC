@@ -117,7 +117,7 @@ export default function ForgotPassword() {
                       placeholder="e.g. user@example.com or 918707630603"
                       value={identifier}
                       onChange={(e) => setIdentifier(e.target.value)}
-                      className="w-full bg-white/5 border border-white/15 p-2.5 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-[#C9A56A] focus:bg-white/10 rounded-sm"
+                      className="w-full bg-white/5 border border-white/15 p-2.5 text-base md:text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-[#C9A56A] focus:bg-white/10 rounded-sm"
                     />
                   </div>
                   <Button 
@@ -151,7 +151,7 @@ export default function ForgotPassword() {
                       placeholder="Enter 6-digit code"
                       value={otp}
                       onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                      className="w-full bg-white/5 border border-white/15 p-2.5 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-[#C9A56A] focus:bg-white/10 rounded-sm tracking-[0.2em] text-center font-bold"
+                      className="w-full bg-white/5 border border-white/15 p-2.5 text-base md:text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-[#C9A56A] focus:bg-white/10 rounded-sm tracking-[0.2em] text-center font-bold"
                     />
                   </div>
                   <div>
@@ -162,7 +162,7 @@ export default function ForgotPassword() {
                       placeholder="At least 6 characters"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      className="w-full bg-white/5 border border-white/15 p-2.5 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-[#C9A56A] focus:bg-white/10 rounded-sm"
+                      className="w-full bg-white/5 border border-white/15 p-2.5 text-base md:text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-[#C9A56A] focus:bg-white/10 rounded-sm"
                     />
                   </div>
                   <div className="flex gap-2">

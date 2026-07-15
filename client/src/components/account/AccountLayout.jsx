@@ -166,6 +166,26 @@ export default function AccountLayout() {
 
       {/* ─── MAIN CONTENT ─── */}
       <main className="flex-1 min-w-0 pb-24 md:pb-10 bg-warmcream">
+        {/* Mobile Header Banner */}
+        <div className="md:hidden bg-navy text-cream px-6 py-5 flex items-center justify-between border-b border-gold/10">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#2d0b04] to-navy border border-gold flex items-center justify-center font-cinzel text-sm text-gold">
+              {initials}
+            </div>
+            <div>
+              <h2 className="font-cormorant text-lg font-medium leading-none mb-0.5">{user?.name}</h2>
+              <p className="text-[10px] text-cream/40 truncate max-w-[150px]">{user?.email}</p>
+            </div>
+          </div>
+          <button 
+            onClick={handleLogout}
+            className="flex items-center gap-1.5 border border-[#C9A56A]/30 bg-[#C9A56A]/5 px-2.5 py-1.5 text-[#C9A56A] hover:bg-[#C9A56A]/15 transition-colors rounded cursor-pointer"
+          >
+            <LogOut size={12} />
+            <span className="font-cinzel text-[8px] tracking-wider font-semibold">SIGN OUT</span>
+          </button>
+        </div>
+
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}

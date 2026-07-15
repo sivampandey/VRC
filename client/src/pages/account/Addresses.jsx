@@ -114,7 +114,7 @@ function AddressForm({ defaultValues, onSave, onCancel, isSaving }) {
             <input
               {...register('phone', {
                 required: 'Required',
-                pattern: { value: /^[6-9]\d{9}$/, message: 'Invalid number' },
+                pattern: { value: /^[0-9+\s-()]{10,20}$/, message: 'Invalid number' },
               })}
               type="tel"
               className={inputClass}
@@ -159,11 +159,11 @@ function AddressForm({ defaultValues, onSave, onCancel, isSaving }) {
             <input
               {...register('pincode', {
                 required: 'Required',
-                pattern: { value: /^\d{6}$/, message: '6-digit pincode' },
+                pattern: { value: /^[a-zA-Z0-9\s-]{3,10}$/, message: 'Invalid pincode' },
               })}
               className={inputClass}
-              placeholder="6-digit pincode"
-              maxLength={6}
+              placeholder="Pincode / Zip code"
+              maxLength={10}
             />
             {errors.pincode && <p className="text-burgundy text-[11px]">{errors.pincode.message}</p>}
           </div>

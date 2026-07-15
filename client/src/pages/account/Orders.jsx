@@ -160,7 +160,7 @@ export default function Orders() {
   const [filter, setFilter] = useState('ALL')
   const { data, isLoading } = useGetMyOrdersQuery()
 
-  const orders   = data?.orders || []
+  const orders   = Array.isArray(data) ? data : (data?.orders || [])
   const filtered = orders.filter(o => {
     if (filter === 'ALL')       return true
     if (filter === 'ACTIVE')    return !['delivered', 'cancelled'].includes(o.orderStatus)

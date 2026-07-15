@@ -50,7 +50,7 @@ function OrderTimeline({ status }) {
 export default function OrderDetail() {
   const { id }  = useParams()
   const { data, isLoading, isError } = useGetOrderByIdQuery(id)
-  const order = data?.order
+  const order = data && !data.order ? data : data?.order
 
   if (isLoading) {
     return (

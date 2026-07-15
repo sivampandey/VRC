@@ -241,7 +241,7 @@ export default function ProductDetail() {
 
                 {/* Direct Order */}
                 <Button onClick={handleBuyNow} variant="primary" className="flex-grow py-3.5">
-                  Direct Order
+                  Place Order
                 </Button>
 
                 <button 

@@ -111,8 +111,8 @@ export default function Checkout() {
       toast.error('Phone Number is required.')
       return
     }
-    if (!/^[6-9]\d{9}$/.test(address.phone?.trim())) {
-      toast.error('Please enter a valid 10-digit phone number.')
+    if (!/^[0-9+\s-()]{10,20}$/.test(address.phone?.trim())) {
+      toast.error('Please enter a valid phone number.')
       return
     }
     if (!guestEmail?.trim()) {
@@ -135,8 +135,8 @@ export default function Checkout() {
       toast.error('Pincode is required.')
       return
     }
-    if (!/^\d{6}$/.test(address.pincode?.trim())) {
-      toast.error('Pincode must be a 6-digit number.')
+    if (!/^[a-zA-Z0-9\s-]{3,10}$/.test(address.pincode?.trim())) {
+      toast.error('Please enter a valid pincode / zip code.')
       return
     }
 

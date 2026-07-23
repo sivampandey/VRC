@@ -5,23 +5,21 @@ export default function ScrollReveal({
   children,
   delay = 0,
   direction = 'up',
-  duration = 0.7,
+  duration = 0.75,
+  distance = 36,
   className = '',
   style = {}
 }) {
   const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, amount: 0.1 })
+  const isInView = useInView(ref, { once: true, amount: 0.08 })
 
   const getDirectionOffset = () => {
     switch (direction) {
-      case 'up':
-        return { y: 40, x: 0 }
-      case 'left':
-        return { x: 40, y: 0 }
-      case 'right':
-        return { x: -40, y: 0 }
-      default:
-        return { y: 40, x: 0 }
+      case 'up':    return { y: distance, x: 0 }
+      case 'down':  return { y: -distance, x: 0 }
+      case 'left':  return { x: distance, y: 0 }
+      case 'right': return { x: -distance, y: 0 }
+      default:      return { y: distance, x: 0 }
     }
   }
 
@@ -33,11 +31,18 @@ export default function ScrollReveal({
       className={className}
       style={style}
       initial={{ opacity: 0, ...offset }}
-      animate={isInView ? { opacity: 1, x: 0, y: 0 } : { opacity: 0, ...offset }}
+      animate={isInView
+        ? { opacity: 1, x: 0, y: 0 }
+        : { opacity: 0, ...offset }
+      }
       transition={{
-        duration: duration,
+        type: 'spring',
+        stiffness: 60,
+        damping: 18,
+        mass: 0.9,
         delay: delay,
-        ease: [0.16, 1, 0.3, 1], // Premium bezier curve
+        // Fallback to tween for opacity
+        opacity: { duration: duration * 0.8, ease: 'easeOut', delay },
       }}
     >
       {children}

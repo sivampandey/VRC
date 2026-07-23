@@ -181,7 +181,7 @@
   }
 
   .hero {
-    min-height: 720px;
+    min-height: 100svh; /* Full screen height on mobile too */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -195,8 +195,9 @@
 
   .hero-inner {
     text-align: center;
-    padding: 100px 20px 60px; /* Push hero text down to clear the absolute 68px navbar overlay */
+    padding: 100px 20px 52px;
     max-width: 820px;
+    width: 100%;
   }
 
   .hero-label {
@@ -238,26 +239,39 @@
   }
 
   .hero-sub {
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 300;
     color: rgba(250, 245, 240, 0.68);
     max-width: 580px;
-    margin: 0 auto 36px;
+    margin: 0 auto 28px;
     line-height: 1.7;
+    padding: 0 4px;
+  }
+
+  @media (min-width: 640px) {
+    .hero-sub {
+      font-size: 15px;
+      margin: 0 auto 36px;
+    }
   }
 
   .hero-btns {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
     justify-content: center;
-    margin-bottom: 52px;
+    margin-bottom: 36px;
+    width: 100%;
+    padding: 0 12px;
   }
 
   @media (min-width: 640px) {
     .hero-btns {
       flex-direction: row;
+      margin-bottom: 52px;
+      padding: 0;
+      width: auto;
     }
   }
 
@@ -266,6 +280,7 @@
     color: var(--N);
     height: 48px;
     min-width: 220px;
+    width: 100%; /* full-width on mobile inside flex column */
     padding: 0 24px;
     font-family: 'Cinzel', serif;
     font-size: 10.5px;
@@ -281,6 +296,12 @@
     box-sizing: border-box;
   }
 
+  @media (min-width: 640px) {
+    .btn-g {
+      width: auto;
+    }
+  }
+
   .btn-g:hover {
     background: #D9BB8A;
   }
@@ -289,6 +310,7 @@
     background: transparent;
     color: var(--C);
     padding: 13px 34px;
+    width: 100%; /* full-width on mobile */
     font-family: 'Cinzel', serif;
     font-size: 10.5px;
     letter-spacing: .12em;
@@ -301,11 +323,24 @@
     background: rgba(250,245,240,.1);
   }
 
+  @media (min-width: 640px) {
+    .btn-co {
+      width: auto;
+    }
+  }
+
   .hero-stats {
     display: flex;
-    gap: 40px;
+    gap: 20px;
     justify-content: center;
     align-items: center;
+    flex-wrap: nowrap;
+  }
+
+  @media (min-width: 640px) {
+    .hero-stats {
+      gap: 40px;
+    }
   }
 
   .hstat {
@@ -314,23 +349,43 @@
 
   .hstat-num {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 30px;
+    font-size: 22px;
     color: var(--C);
     font-weight: 300;
   }
 
+  @media (min-width: 640px) {
+    .hstat-num {
+      font-size: 30px;
+    }
+  }
+
   .hstat-label {
     font-family: 'Cinzel', serif;
-    font-size: 8px;
-    letter-spacing: .18em;
+    font-size: 6.5px;
+    letter-spacing: .12em;
     color: rgba(201,165,106,.65);
     margin-top: 2px;
   }
 
+  @media (min-width: 640px) {
+    .hstat-label {
+      font-size: 8px;
+      letter-spacing: .18em;
+    }
+  }
+
   .hdivide {
     width: .5px;
-    height: 32px;
+    height: 24px;
     background: rgba(201,165,106,.25);
+    flex-shrink: 0;
+  }
+
+  @media (min-width: 640px) {
+    .hdivide {
+      height: 32px;
+    }
   }
 
   .trust {
@@ -349,31 +404,53 @@
   .trust-inner {
     max-width: 1200px;
     margin: 0 auto;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    gap: 16px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    justify-items: center;
+    gap: 20px 8px;
+  }
+
+  @media (min-width: 768px) {
+    .trust-inner {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      gap: 16px;
+    }
   }
 
   .ti-badge {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 9px;
+    gap: 7px;
   }
 
   .ti-badge i {
-    font-size: 23px;
+    font-size: 20px;
     color: var(--G);
+  }
+
+  @media (min-width: 768px) {
+    .ti-badge i {
+      font-size: 23px;
+    }
   }
 
   .ti-badge span {
     font-family: 'Cinzel', serif;
-    font-size: 9px;
-    letter-spacing: .14em;
+    font-size: 7.5px;
+    letter-spacing: .10em;
     color: var(--N);
     text-align: center;
     line-height: 1.4;
+  }
+
+  @media (min-width: 768px) {
+    .ti-badge span {
+      font-size: 9px;
+      letter-spacing: .14em;
+    }
   }
 
   .tdiv {
@@ -1307,4 +1384,505 @@
     max-width: 80px;
     background: rgba(201,165,106,.3);
   }
+
+  /* ═══════════════════════════════════════════════════
+     LUXURY ANIMATION KEYFRAMES
+  ═══════════════════════════════════════════════════ */
+
+  /* Gold shimmer sweep — use on buttons, cards, badges */
+  @keyframes goldShimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position:  200% center; }
+  }
+
+  /* Soft float bob — use on icons, ornaments */
+  @keyframes floatBob {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-7px); }
+  }
+
+  /* Glow pulse — radial glow breathing */
+  @keyframes glowPulse {
+    0%, 100% { box-shadow: 0 0 0px rgba(201,165,106,0); }
+    50%       { box-shadow: 0 0 28px rgba(201,165,106,0.4), 0 0 56px rgba(201,165,106,0.15); }
+  }
+
+  /* Ken Burns subtle zoom on hero bg */
+  @keyframes kenBurns {
+    0%   { transform: scale(1) translateX(0); }
+    100% { transform: scale(1.07) translateX(-1%); }
+  }
+
+  /* Slow horizontal drift for particles */
+  @keyframes driftX {
+    0%   { transform: translateX(0) translateY(0) scale(1); opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 0.6; }
+    100% { transform: translateX(calc(var(--dx, 60px))) translateY(calc(var(--dy, -80px))) scale(0.4); opacity: 0; }
+  }
+
+  /* Gold line expand */
+  @keyframes lineExpand {
+    from { transform: scaleX(0); opacity: 0; }
+    to   { transform: scaleX(1); opacity: 1; }
+  }
+
+  /* Rotate slow — for ornamental ring */
+  @keyframes rotateSlow {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  /* Spin slow reverse */
+  @keyframes rotateReverse {
+    from { transform: rotate(360deg); }
+    to   { transform: rotate(0deg); }
+  }
+
+  /* ═══════════════════════════════════════════════════
+     UTILITY ANIMATION CLASSES
+  ═══════════════════════════════════════════════════ */
+
+  /* Gold shimmer applied to btn-g */
+  .btn-g {
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-g::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%);
+    background-size: 200% 100%;
+    animation: goldShimmer 3.2s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  /* Float bob on trust badge icons */
+  .ti-badge i {
+    animation: floatBob 3.5s ease-in-out infinite;
+  }
+  .ti-badge:nth-child(2n) i  { animation-delay: 0.5s; }
+  .ti-badge:nth-child(3n) i  { animation-delay: 1s; }
+  .ti-badge:nth-child(4n) i  { animation-delay: 1.5s; }
+  .ti-badge:nth-child(5n) i  { animation-delay: 2s; }
+
+  /* Glow pulse on CTA circle steps */
+  .cta-sc {
+    animation: glowPulse 2.8s ease-in-out infinite;
+  }
+  .cta-step:nth-child(2) .cta-sc { animation-delay: 0.8s; }
+  .cta-step:nth-child(3) .cta-sc { animation-delay: 1.6s; }
+
+  /* Craft step circles glow */
+  .cs-n {
+    transition: all 0.4s ease;
+  }
+  .cs:hover .cs-n {
+    box-shadow: 0 0 18px rgba(201,165,106,0.55);
+    border-color: rgba(201,165,106,0.9);
+    color: #fff;
+  }
+
+  /* Hero background ken burns */
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: inherit;
+    animation: kenBurns 18s ease-in-out infinite alternate;
+    z-index: 0;
+  }
+  /* Ensure hero content is above the pseudo */
+  .hero-inner {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Collection card: gold shimmer sweep on hover */
+  .col-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, transparent 25%, rgba(201,165,106,0.18) 50%, transparent 75%);
+    background-size: 300% 100%;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: 5;
+    pointer-events: none;
+  }
+  .col-card:hover::before {
+    opacity: 1;
+    animation: goldShimmer 1.8s ease forwards;
+  }
+
+  /* Product card refined hover */
+  .pcard {
+    transition: box-shadow 0.4s cubic-bezier(0.16,1,0.3,1), transform 0.4s cubic-bezier(0.16,1,0.3,1);
+  }
+  .pcard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 24px 56px rgba(22,4,0,0.18), 0 0 0 1px rgba(201,165,106,0.12);
+  }
+
+  /* Section h2 — subtle gold underline draw */
+  .sec-h2 {
+    position: relative;
+    display: inline-block;
+  }
+  .sec-h2::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 40px;
+    height: 1.5px;
+    background: var(--G);
+    animation: lineExpand 1s cubic-bezier(0.16,1,0.3,1) both;
+    animation-play-state: paused;
+  }
+  /* Trigger when sec-h2 is visible — we rely on parent ScrollReveal visibility */
+  .sec-hdr .sec-h2::after {
+    animation-play-state: running;
+  }
+
+  /* Collection card border top shimmer */
+  .col-card .col-border-shimmer {
+    animation: lineExpand 0.6s 0.4s cubic-bezier(0.16,1,0.3,1) both;
+  }
+
+  /* Ornamental ring in the hero (optional class) */
+  .ornament-ring {
+    animation: rotateSlow 25s linear infinite;
+  }
+  .ornament-ring-r {
+    animation: rotateReverse 18s linear infinite;
+  }
+
+  /* Navigation link hover — gold wipe underline */
+  .nl {
+    position: relative;
+  }
+  .nl::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--G);
+    transition: width 0.3s cubic-bezier(0.16,1,0.3,1);
+  }
+  .nl:hover::after {
+    width: 100%;
+  }
+
+  /* Hero scroll line pulse */
+  @keyframes scrollLinePulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(1); }
+    50%       { opacity: 0.8; transform: scaleY(1.15); }
+  }
+
+  /* Announcement bar shimmer */
+  .ann {
+    position: relative;
+    overflow: hidden;
+  }
+  .ann::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 30%, rgba(201,165,106,0.12) 50%, transparent 70%);
+    background-size: 200% 100%;
+    animation: goldShimmer 4s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  /* Footer social icons hover lift */
+  .fsocial i {
+    transition: color 0.25s ease, transform 0.3s cubic-bezier(0.16,1,0.3,1);
+  }
+  .fsocial i:hover {
+    transform: translateY(-3px) scale(1.1);
+  }
+
+  /* Wishlist / cart icon pulse when count > 0 */
+  @keyframes badgePop {
+    0%   { transform: scale(1); }
+    30%  { transform: scale(1.35); }
+    60%  { transform: scale(0.9); }
+    100% { transform: scale(1); }
+  }
+  .cbadge span, .nav-right .absolute {
+    animation: badgePop 0.5s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  /* Viewall link arrow animate */
+  .viewall i {
+    transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
+    display: inline-block;
+  }
+  .viewall:hover i {
+    transform: translateX(5px);
+    animation: none;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     MOBILE RESPONSIVE & COMPACT CARDS (< 640px / < 768px)
+  ═══════════════════════════════════════════════════ */
+
+  @media (max-width: 767px) {
+    /* Section padding compact on mobile */
+    .sec {
+      padding: 24px 12px;
+    }
+    .sec-off {
+      padding: 24px 12px;
+    }
+    .sec-hdr {
+      margin-bottom: 16px;
+    }
+    .sec-h2 {
+      font-size: 22px;
+    }
+    .sec-lbl {
+      font-size: 8px;
+      margin-bottom: 4px;
+    }
+
+    /* Product card full height in slider and compact sizing */
+    .pcard {
+      height: 100%;
+    }
+
+    .pimg {
+      aspect-ratio: 1 / 1;
+    }
+
+    .pimg-bg {
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .pinfo {
+      padding: 8px 10px 10px;
+    }
+
+    .pcol {
+      font-size: 7px;
+      margin-bottom: 2px;
+      letter-spacing: 0.14em;
+    }
+
+    .pname {
+      font-size: 13px;
+      margin-bottom: 4px;
+      line-height: 1.15;
+    }
+
+    .pprice, .psale {
+      font-size: 12.5px;
+      font-weight: 600;
+    }
+
+    .porig {
+      font-size: 10px;
+    }
+
+    .pheart {
+      top: 6px;
+      right: 6px;
+      width: 26px;
+      height: 26px;
+    }
+
+    .pheart svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .pbadge {
+      top: 6px;
+      left: 6px;
+      padding: 2px 5px;
+      font-size: 6px;
+    }
+
+    .p-over-btn {
+      padding: 6px 0;
+      font-size: 7.5px;
+    }
+
+    .p-frame::after {
+      inset: 4px;
+    }
+  }
+
+  @media (max-width: 639px) {
+    /* Hero section compact height & padding on mobile */
+    .hero {
+      min-height: 480px;
+      padding: 76px 14px 24px;
+    }
+    .hero-inner {
+      padding: 72px 10px 24px;
+    }
+    .hero-h, .hero-hi {
+      font-size: 24px;
+      line-height: 1.1;
+      margin-bottom: 2px;
+    }
+    .hero-sub {
+      font-size: 12px;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+    .hero-btns {
+      margin-bottom: 18px;
+      gap: 8px;
+      padding: 0;
+    }
+    .btn-g, .btn-co, .btn-wa {
+      height: 38px;
+      font-size: 9px;
+      min-width: auto;
+      padding: 0 16px;
+    }
+    .hero-stats {
+      gap: 10px;
+    }
+    .hstat-num {
+      font-size: 17px;
+    }
+    .hstat-label {
+      font-size: 5.5px;
+      letter-spacing: 0.1em;
+    }
+    .hdivide {
+      height: 16px;
+    }
+
+    /* Trust badges section */
+    .trust {
+      padding: 14px 8px;
+    }
+
+    /* Craft section compact */
+    .craft {
+      min-height: auto;
+    }
+    .craft-img {
+      min-height: 180px;
+    }
+    .craft-content {
+      padding: 20px 12px;
+    }
+    .craft-h2 {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+    .craft-p {
+      font-size: 12px;
+      margin-bottom: 14px;
+      line-height: 1.55;
+    }
+    .craft-steps {
+      margin-bottom: 16px;
+      gap: 8px;
+    }
+    .cs-n {
+      width: 26px;
+      height: 26px;
+      font-size: 9.5px;
+    }
+    .cs-l {
+      font-size: 6.5px;
+    }
+
+    /* CTA section compact */
+    .cta-bg {
+      padding: 24px 12px;
+    }
+    .cta-lbl {
+      font-size: 8px;
+      margin-bottom: 6px;
+      letter-spacing: 0.2em;
+    }
+    .cta-h2 {
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+    .cta-p {
+      font-size: 11px;
+      margin: 0 auto 12px;
+      line-height: 1.45;
+    }
+    .cta-steps {
+      gap: 10px;
+      margin-top: 10px;
+      margin-bottom: 14px;
+    }
+    .cta-step {
+      padding: 0 4px;
+    }
+    .cta-sc {
+      width: 28px;
+      height: 28px;
+      font-size: 11px;
+      margin: 0 auto 3px;
+    }
+    .cta-sn {
+      font-size: 7.5px;
+      margin-bottom: 2px;
+    }
+    .cta-sd {
+      font-size: 9.5px;
+      line-height: 1.25;
+    }
+    .cta-btns {
+      gap: 6px;
+    }
+
+    /* Newsletter compact */
+    .news {
+      padding: 24px 12px;
+    }
+    .news-h2 {
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+    .news-sub {
+      font-size: 11px;
+      line-height: 1.4;
+    }
+    .news-orn {
+      margin: 10px 0;
+      font-size: 9px;
+    }
+    .news-form {
+      max-width: 100%;
+      margin-bottom: 8px;
+    }
+    .news-in, .news-btn {
+      padding: 7px 10px;
+      font-size: 8px;
+    }
+
+    /* Footer compact */
+    .footer {
+      padding: 20px 12px 14px;
+    }
+    .fgrid {
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+  }
+
+  /* Slider drag cursor */
+  .slider-track {
+    will-change: transform;
+  }
 }
+
+

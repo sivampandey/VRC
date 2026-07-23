@@ -276,11 +276,11 @@ export default function Shop() {
 
               {/* Product Card Grid */}
               {sortedProducts.length === 0 ? (
-                <div className="bg-white border border-border/40 py-24 text-center">
-                  <p className="text-muted text-sm">No rugs match your selected filters. Please clear filters and try again.</p>
+                <div className="bg-white border border-border/40 py-16 text-center">
+                  <p className="text-muted text-xs sm:text-sm">No rugs match your selected filters. Please clear filters and try again.</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3 sm:gap-6">
                   {sortedProducts.map((prod, idx) => (
                     <ScrollReveal key={prod._id} direction="up" delay={idx * 0.05}>
                       <ProductCard product={prod} />

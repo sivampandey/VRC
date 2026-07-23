@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import { Search, Heart, ShoppingBag, User, Menu, X, ArrowRight } from 'lucide-react'
 import { selectCartCount } from '../../store/cartSlice'
 import { selectWishlist } from '../../store/wishlistSlice'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -92,15 +93,15 @@ export default function Navbar() {
         {/* Right Side Icons */}
         <div className="nav-right">
           {/* Search Icon */}
-          <i 
-            className="ti ti-search" 
+          <Search 
+            className="w-5 h-5 text-[#160400] opacity-80 hover:opacity-100 hover:text-[#C9A56A] cursor-pointer transition"
             onClick={() => setIsSearchOpen(true)}
             aria-label="Search"
-          ></i>
+          />
 
           {/* Wishlist Icon */}
           <Link to="/wishlist" className="relative group flex items-center justify-center">
-            <i className="ti ti-heart" aria-label="Wishlist"></i>
+            <Heart className="w-5 h-5 text-[#160400] opacity-80 hover:opacity-100 hover:text-[#C9A56A] transition" aria-label="Wishlist" />
             {wishlistCount > 0 && (
               <span className="absolute -top-1.5 -right-2 bg-[#C9A56A] text-[#160400] font-jost text-[8px] font-semibold w-4 h-4 rounded-full flex items-center justify-center">
                 {wishlistCount}
@@ -110,7 +111,7 @@ export default function Navbar() {
 
           {/* Cart Icon with badge style */}
           <Link to="/cart" className="cbadge flex items-center justify-center relative">
-            <i className="ti ti-shopping-bag" aria-label="Cart"></i>
+            <ShoppingBag className="w-5 h-5 text-[#160400] opacity-80 hover:opacity-100 hover:text-[#C9A56A] transition" aria-label="Cart" />
             {cartCount > 0 && (
               <span className="absolute -top-1.5 -right-2 bg-[#C9A56A] text-[#160400] font-jost text-[8px] font-semibold w-4 h-4 rounded-full flex items-center justify-center">{cartCount}</span>
             )}
@@ -118,15 +119,15 @@ export default function Navbar() {
 
           {/* Account Icon */}
           <Link to="/account/profile" className="flex items-center justify-center">
-            <i className="ti ti-user" aria-label="Profile"></i>
+            <User className="w-5 h-5 text-[#160400] opacity-80 hover:opacity-100 hover:text-[#C9A56A] transition" aria-label="Profile" />
           </Link>
 
           {/* Mobile Menu Toggle Icon */}
-          <i 
-            className="ti ti-menu-2 lg:hidden text-xl font-bold cursor-pointer" 
+          <Menu 
+            className="w-6 h-6 lg:hidden cursor-pointer text-[#160400] hover:text-[#C9A56A] transition" 
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Toggle menu"
-          ></i>
+          />
         </div>
       </nav>
 
@@ -165,11 +166,11 @@ export default function Navbar() {
                     style={{ mixBlendMode: 'multiply' }}
                   />
                 </Link>
-                <i 
-                  className="ti ti-x text-2xl cursor-pointer text-[#160400] hover:text-[#C9A56A]"
+                <X 
+                  className="w-6 h-6 cursor-pointer text-[#160400] hover:text-[#C9A56A] transition"
                   onClick={() => setIsMobileMenuOpen(false)}
                   aria-label="Close menu"
-                ></i>
+                />
               </div>
 
               <nav className="flex flex-col gap-6 py-12">
@@ -210,11 +211,11 @@ export default function Navbar() {
             className="fixed inset-0 z-[100] flex items-center justify-center p-4"
             style={{ background: 'rgba(22,4,0,0.92)', backdropFilter: 'blur(12px)' }}
           >
-            <i 
-              className="ti ti-x absolute top-6 right-6 text-3xl cursor-pointer text-white opacity-70 hover:opacity-100 transition-opacity"
+            <X 
+              className="w-7 h-7 absolute top-6 right-6 cursor-pointer text-white opacity-70 hover:opacity-100 transition-opacity"
               onClick={() => setIsSearchOpen(false)}
               aria-label="Close search"
-            ></i>
+            />
 
             <motion.div
               initial={{ opacity: 0, y: 15 }}
@@ -237,7 +238,7 @@ export default function Navbar() {
                   autoFocus
                 />
                 <button type="submit" className="absolute right-0 bottom-3 text-white opacity-75 hover:opacity-100">
-                  <i className="ti ti-arrow-right text-xl"></i>
+                  <ArrowRight className="w-5 h-5" />
                 </button>
               </form>
 
